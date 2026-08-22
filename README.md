@@ -57,3 +57,39 @@ A Participant can:
 
 
 ---
+## Database Design
+
+<img src="docs/RaceDayERD.png" alt="RaceDay ERD" width="600" />
+
+# RaceDay
+
+
+
+## Core Tables
+
+
+| Table      | Purpose                                                                      |
+| ---------- | ---------------------------------------------------------------------------- |
+| Users      | Stores Organiser and Participant accounts.                                   |
+| EventTypes | Stores the types of events supported by RaceDay.                             |
+| Events     | Stores event information and links events to Organisers and EventTypes.      |
+| Categories | Stores the age and distance categories available for each event.             |
+| Enrolments | Links Participants to Events and records their selected category and status. |
+| Results    | Stores finishing information for an enrolment.                               |
+
+
+The database uses:
+
+- Primary keys.
+- Foreign keys.
+- Unique constraints.
+- Check constraints.
+- NOT NULL constraints.
+- Indexes on frequently queried fields and relationships.
+- Referential integrity between related entities.
+
+The complete database script is located at:
+
+```
+/docs/RaceDay-Database.sql
+```
