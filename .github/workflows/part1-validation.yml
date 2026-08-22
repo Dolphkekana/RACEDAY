@@ -1,0 +1,48 @@
+name: RaceDay Part 1 Validation
+
+# Run the workflow whenever changes are pushed to the repository.
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate-part1:
+    name: Validate Part 1 Repository
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # Download the repository so GitHub Actions can inspect the files.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Check that the required docs folder exists.
+      - name: Check docs folder
+        run: |
+          test -d docs
+
+      # Check that the ERD exists
+      - name: Check ERD
+        run: |
+          test -f docs/RaceDayERD.png
+
+      # Check that the API endpoint plan exists
+      - name: Check API endpoint plan
+        run: |
+          test -f docs/RaceDay_API_Endpoint_Plan.md
+
+      # Check that the SQL database script exists
+      - name: Check SQL database script
+        run: |
+          test -f docs/RaceDay-Database.sql
+
+      # Display the files that were successfully validated
+      - name: Display Part 1 documentation
+        run: |
+          echo "Part 1 documentation found:"
+          ls -la docs
+
+      # Final confirmation message
+      - name: Validation complete
+        run: |
+          echo "RaceDay Part 1 repository validation completed successfully."
