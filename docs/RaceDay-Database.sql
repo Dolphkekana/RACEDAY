@@ -182,3 +182,28 @@ CREATE TABLE dbo.Results
         UNIQUE (EnrolmentId)
 );
 GO
+--Indexes
+CREATE INDEX IX_Events_OrganiserId
+    ON dbo.Events(OrganiserId);
+
+CREATE INDEX IX_Events_EventTypeId
+    ON dbo.Events(EventTypeId);
+
+CREATE INDEX IX_Events_EventDate
+    ON dbo.Events(EventDate);
+
+CREATE INDEX IX_Categories_EventId
+    ON dbo.Categories(EventId);
+
+CREATE INDEX IX_Enrolments_EventId
+    ON dbo.Enrolments(EventId);
+
+CREATE INDEX IX_Enrolments_ParticipantId
+    ON dbo.Enrolments(ParticipantId);
+
+CREATE INDEX IX_Enrolments_CategoryId
+    ON dbo.Enrolments(CategoryId);
+
+CREATE INDEX IX_Results_FinishingPosition
+    ON dbo.Results(FinishingPosition);
+GO
