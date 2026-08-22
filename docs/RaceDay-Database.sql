@@ -207,3 +207,116 @@ CREATE INDEX IX_Enrolments_CategoryId
 CREATE INDEX IX_Results_FinishingPosition
     ON dbo.Results(FinishingPosition);
 GO
+--Seed Event Types
+SET IDENTITY_INSERT dbo.EventTypes ON;
+INSERT INTO dbo.EventTypes (EventTypeId, Name)
+VALUES
+(1, N'Run'),
+(2, N'Walk'),
+(3, N'Cycle');
+
+SET IDENTITY_INSERT dbo.EventTypes OFF;
+GO
+
+--Seed Users
+SET IDENTITY_INSERT dbo.Users ON;
+
+INSERT INTO dbo.Users
+(
+    UserId, FirstName, LastName, Email, PasswordHash,
+    PhoneNumber, DateOfBirth, Role, CreatedAt
+)
+VALUES
+(1, N'Adolf', N'Kekana',
+ N'adolf.kekana@raceday.co.za',
+ N'AQAAAAEAAYagAAAAEBs8HkANVrgFnBt/Y6NI81mlszreepfA5CfSsBhKTxvX5dacqbPXP4OnrCWPl/8zZw==',
+ N'0712345678', '1990-03-18', N'Organiser',
+ '2026-08-01T08:30:00'),
+
+(2, N'Kabelo', N'Dlamini',
+ N'kabelo.dlamini@raceday.co.za',
+ N'AQAAAAEAAYagAAAAEBs8HkANVrgFnBt/Y6NI81mlszreepfA5CfSsBhKTxvX5dacqbPXP4OnrCWPl/8zZw==',
+ N'0723456789', '1987-11-02', N'Organiser',
+ '2026-08-01T09:00:00'),
+
+(3, N'Thabang', N'Sekwati',
+ N'thabang.sekwati@example.com',
+ N'AQAAAAEAAYagAAAAEDN+K03dwM5fDpvJKPKlQF5O4v/GlqlHhqA5isHtcUHFF/BBNq8sA1rvGNba2gMoSw==',
+ N'0734567890', '2002-05-14', N'Participant',
+ '2026-08-02T10:15:00'),
+
+(4, N'Amanda', N'Nkosi',
+ N'amanda.nkosi@example.com',
+ N'AQAAAAEAAYagAAAAEDN+K03dwM5fDpvJKPKlQF5O4v/GlqlHhqA5isHtcUHFF/BBNq8sA1rvGNba2gMoSw==',
+ N'0745678901', '1998-08-21', N'Participant',
+ '2026-08-02T11:00:00');
+
+SET IDENTITY_INSERT dbo.Users OFF;
+GO
+
+--Seed Events
+SET IDENTITY_INSERT dbo.Events ON;
+
+INSERT INTO dbo.Events
+(
+    EventId, OrganiserId, EventTypeId, Name, Description,
+    EventDate, Location, DistanceKm, BannerImageUrl,
+    CreatedAt, UpdatedAt
+)
+VALUES
+(1, 1, 1, N'Soweto Spring Run',
+ N'A community road running event supporting local fitness and healthy living.',
+ '2026-09-20', N'Soweto, Johannesburg', 21.00,
+ N'https://example.com/images/soweto-spring-run.jpg',
+ '2026-08-03T08:00:00', NULL),
+
+(2, 2, 2, N'Johannesburg Family Walk',
+ N'A family-friendly walking event suitable for participants of different ages.',
+ '2026-10-04', N'Johannesburg, Gauteng', 10.00,
+ N'https://example.com/images/johannesburg-family-walk.jpg',
+ '2026-08-04T09:00:00', NULL),
+
+(3, 1, 3, N'Cradle Cycle Challenge',
+ N'A road cycling event through the scenic Cradle of Humankind area.',
+ '2026-10-18', N'Cradle of Humankind, Gauteng', 42.00,
+ N'https://example.com/images/cradle-cycle-challenge.jpg',
+ '2026-08-05T07:30:00', NULL);
+
+SET IDENTITY_INSERT dbo.Events OFF;
+GO
+
+--Seeding Categories for each event
+SET IDENTITY_INSERT dbo.Categories ON;
+
+INSERT INTO dbo.Categories
+(
+    CategoryId, EventId, Name,
+    MinimumAge, MaximumAge, DistanceKm
+)
+VALUES
+(1, 1, N'Junior 10 km', 14, 17, 10.00),
+(2, 1, N'Senior 21 km', 18, NULL, 21.00),
+(3, 2, N'Family 5 km', NULL, NULL, 5.00),
+(4, 2, N'Senior 10 km', 18, NULL, 10.00),
+(5, 3, N'Open 42 km', 18, NULL, 42.00),
+(6, 3, N'Junior 20 km', 16, 17, 20.00);
+
+SET IDENTITY_INSERT dbo.Categories OFF;
+GO
+
+--Seeding Enrolments for each event
+SET IDENTITY_INSERT dbo.Enrolments ON;
+
+INSERT INTO dbo.Enrolments
+(
+    EnrolmentId, ParticipantId, EventId,
+    CategoryId, EnrolmentDate, Status
+)
+VALUES
+(1, 3, 1, 2, '2026-08-06T10:15:00', N'Confirmed'),
+(2, 4, 1, 2, '2026-08-06T11:20:00', N'Confirmed'),
+(3, 3, 2, 4, '2026-08-07T09:45:00', N'Confirmed'),
+(4, 4, 3, 5, '2026-08-07T14:10:00', N'Pending');
+
+SET IDENTITY_INSERT dbo.Enrolments OFF;
+GO
