@@ -93,3 +93,86 @@ The complete database script is located at:
 ```
 /docs/RaceDay-Database.sql
 ```
+## API Design
+
+RaceDay follows a REST-style API structure.
+
+### Authentication
+
+```
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/logout
+```
+
+
+
+### User Profile
+
+```
+GET  /api/users/me
+PUT  /api/users/me
+```
+
+
+
+### Events
+
+```
+GET    /api/events
+GET    /api/events/{eventId}
+POST   /api/events
+PUT    /api/events/{eventId}
+DELETE /api/events/{eventId}
+```
+
+
+
+### Event Types
+
+```
+GET /api/event-types
+GET /api/event-types/{eventTypeId}
+```
+
+
+
+### Categories
+
+```
+GET    /api/events/{eventId}/categories
+GET    /api/categories/{categoryId}
+POST   /api/events/{eventId}/categories
+PUT    /api/categories/{categoryId}
+DELETE /api/categories/{categoryId}
+```
+
+
+
+### Enrolments
+
+```
+POST /api/events/{eventId}/enrolments
+GET  /api/enrolments/my
+GET  /api/enrolments/{enrolmentId}
+GET  /api/events/{eventId}/enrolments
+PUT  /api/enrolments/{enrolmentId}/status
+```
+
+
+
+### Results
+
+```
+POST /api/enrolments/{enrolmentId}/result
+PUT  /api/results/{resultId}
+GET  /api/results/my
+```
+
+The complete API specification is available in:
+
+```
+/docs/RaceDay-API-Endpoint-Plan.md
+```
+
+The endpoint plan contains the HTTP methods, routes, descriptions, role requirements, request bodies and expected response codes.
