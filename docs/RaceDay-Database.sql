@@ -320,3 +320,51 @@ VALUES
 
 SET IDENTITY_INSERT dbo.Enrolments OFF;
 GO
+--Seeding Results for each enrolment
+SET IDENTITY_INSERT dbo.Results ON;
+
+INSERT INTO dbo.Results
+(
+    ResultId, EnrolmentId,
+    FinishTime, FinishingPosition, RecordedAt
+)
+VALUES
+(1, 1, '01:42:35', 47, '2026-09-20T12:15:00'),
+(2, 2, '01:51:20', 68, '2026-09-20T12:20:00');
+
+SET IDENTITY_INSERT dbo.Results OFF;
+GO
+
+--Verification Queries
+
+--Verifying all six tables
+SELECT TABLE_NAME
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_SCHEMA = 'dbo'
+  AND TABLE_TYPE = 'BASE TABLE'
+ORDER BY TABLE_NAME;
+GO
+
+-- Verifying users and roles
+SELECT
+    UserId, FirstName, LastName, Email, Role
+FROM dbo.Users
+ORDER BY UserId;
+GO
+
+-- Verifying events, organisers and event types
+SELECT
+    e.EventId,
+    e.Name AS EventName,
+    CONCAT(u.FirstName, N' ', u.LastName) AS Organiser,
+    et.Name AS EventType,
+    e.EventDate,
+    e.Location,
+    e.DistanceKm
+FROM dbo.Events AS e
+INNER JOIN dbo.Users AS u
+    ON e.OrganiserId = u.UserId
+INNER JOIN dbo.EventTypes AS et
+    ON e.EventTypeId = et.EventTypeId
+ORDER BY e.EventDate;
+GO
