@@ -14,6 +14,7 @@ RaceDay supports two roles:
 The API will use session-based authentication. Protected endpoints require an authenticated session, and role-specific endpoints must enforce the required role at the API level.
 
 ---
+
 ## 2. API Conventions
 
 ### Base Route
@@ -47,13 +48,14 @@ Authentication is session-based.
 | `409 Conflict` | The request conflicts with existing data or a business rule. |
 
 ---
+
 # 3. Authentication Endpoints
 
 ## 3.1 Register User
 
 | HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
 |---|---|---|---|---|---|
-| POST | `/api/auth/register` | Creates a new RaceDay account and assigns the selected Organiser or Participant role. | None | `{ "firstName": "Odirile", "lastName": "Masemola", "email": "odirile@example.com", "password": "SecurePassword123!", "phoneNumber": "0712345678", "dateOfBirth": "2002-05-14", "role": "Participant" }` | `201 Created` with the created user's public profile. `400 Bad Request` for invalid data. `409 Conflict` if the email is already registered. |
+| POST | `/api/auth/register` | Creates a new RaceDay account and assigns the selected Organiser or Participant role. | None | `{ "firstName": "Dolph", "lastName": "Kekana", "email": "Dolph@example.com", "password": "SecurePassword123!", "phoneNumber": "0712345678", "dateOfBirth": "2002-05-14", "role": "Participant" }` | `201 Created` with the created user's public profile. `400 Bad Request` for invalid data. `409 Conflict` if the email is already registered. |
 
 ### Registration Rules
 
@@ -68,7 +70,7 @@ Authentication is session-based.
 
 | HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
 |---|---|---|---|---|---|
-| POST | `/api/auth/login` | Authenticates a user and creates an authenticated server-side session containing the user's ID and role. | None | `{ "email": "odirile@example.com", "password": "SecurePassword123!" }` | `200 OK` with the authenticated user's ID, name, and role. `400 Bad Request` for missing fields. `401 Unauthorized` for invalid credentials. |
+| POST | `/api/auth/login` | Authenticates a user and creates an authenticated server-side session containing the user's ID and role. | None | `{ "email": "Dolph@example.com", "password": "SecurePassword123!" }` | `200 OK` with the authenticated user's ID, name, and role. `400 Bad Request` for missing fields. `401 Unauthorized` for invalid credentials. |
 
 ---
 
@@ -94,7 +96,7 @@ Authentication is session-based.
 
 | HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
 |---|---|---|---|---|---|
-| PUT | `/api/users/me` | Updates editable personal information for the currently authenticated user. | Any | `{ "firstName": "Odirile", "lastName": "Masemola", "phoneNumber": "0712345678", "dateOfBirth": "2002-05-14" }` | `200 OK` with the updated profile. `400 Bad Request` for invalid data. `401 Unauthorized` if not logged in. |
+| PUT | `/api/users/me` | Updates editable personal information for the currently authenticated user. | Any | `{ "firstName": "Dolph", "lastName": "Kekana", "phoneNumber": "0712345678", "dateOfBirth": "2002-05-14" }` | `200 OK` with the updated profile. `400 Bad Request` for invalid data. `401 Unauthorized` if not logged in. |
 
 ---
 
@@ -282,3 +284,96 @@ Supported statuses:
 | GET | `/api/results/my` | Returns the authenticated Participant's personal race history, including event, date, category, finish time, and finishing position. | Participant | None | `200 OK` with the Participant's results. `401 Unauthorized` if not logged in. `403 Forbidden` if the user is not a Participant. |
 
 ---
+
+# 10. Endpoint Summary
+
+The planned API contains the following endpoint groups:
+
+| Resource | Planned Operations |
+|---|---|
+| Authentication | Register, Login, Logout |
+| User Profile | Get Profile, Update Profile |
+| Events | List, Get, Create, Update, Delete |
+| Event Types | List, Get |
+| Categories | List by Event, Get, Create, Update, Delete |
+| Enrolments | Create, Get Mine, Get by ID, Get Event Enrolments, Update Status |
+| Results | Create, Update, Get Mine |
+
+**Total planned endpoints: 26**
+
+---
+
+# 11. Role Access Summary
+
+| Operation | Public | Any Authenticated User | Organiser | Participant |
+|---|---:|---:|---:|---:|
+| Register | Yes | No | No | No |
+| Login | Yes | No | No | No |
+| Logout | No | Yes | Yes | Yes |
+| View Events | Yes | Yes | Yes | Yes |
+| View Event Details | Yes | Yes | Yes | Yes |
+| View Event Types | Yes | Yes | Yes | Yes |
+| View Categories | Yes | Yes | Yes | Yes |
+| View Own Profile | No | Yes | Yes | Yes |
+| Update Own Profile | No | Yes | Yes | Yes |
+| Create Event | No | No | Yes | No |
+| Update Own Event | No | No | Yes | No |
+| Delete Own Event | No | No | Yes | No |
+| Create Category | No | No | Yes | No |
+| Update Category | No | No | Yes | No |
+| Delete Category | No | No | Yes | No |
+| Enrol in Event | No | No | No | Yes |
+| View Own Enrolments | No | No | No | Yes |
+| View Event Enrolments | No | No | Yes | No |
+| Update Enrolment Status | No | No | Yes | No |
+| Record Result | No | No | Yes | No |
+| Update Result | No | No | Yes | No |
+| View Own Results | No | No | No | Yes |
+
+---
+
+# 12. Relationship to the Part 1 ERD
+
+The API is designed around the RaceDay database entities:
+
+- `Users`
+- `Events`
+- `EventTypes`
+- `Categories`
+- `Enrolments`
+- `Results`
+
+The planned routes preserve the relationships defined in the ERD:
+
+- A User acting as an Organiser can manage Events.
+- Each Event belongs to an EventType.
+- Each Event can have multiple Categories.
+- A Participant enters an Event through an Enrolment.
+- An Enrolment records the selected Category.
+- An Enrolment may have zero or one Result.
+- A Result belongs to one Enrolment.
+
+The API should not introduce a separate database model that conflicts with the Part 1 ERD.
+
+---
+
+# 13. Part 2 Implementation Rule
+
+This endpoint plan is the API specification for Part 2.
+
+When implementation begins:
+
+1. Routes should follow this plan.
+2. HTTP methods should follow this plan.
+3. Role restrictions should follow this plan.
+4. Request models should represent the documented request bodies.
+5. Response status codes should follow the documented outcomes.
+6. Authentication must use server-side session management.
+7. Protected endpoints must enforce authorization at the API level.
+8. The API must use Entity Framework Core to access the SQL Server database.
+9. Swagger must expose and describe the implemented endpoints.
+10. Any necessary deviation from this plan must be documented and justified.
+
+The goal is for the Part 2 implementation to closely match this approved Part 1 API specification.
+
+
