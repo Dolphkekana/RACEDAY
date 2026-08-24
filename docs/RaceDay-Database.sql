@@ -368,3 +368,16 @@ INNER JOIN dbo.EventTypes AS et
     ON e.EventTypeId = et.EventTypeId
 ORDER BY e.EventDate;
 GO
+-- Verifying every event has categories
+SELECT
+    c.CategoryId,
+    e.Name AS EventName,
+    c.Name AS CategoryName,
+    c.MinimumAge,
+    c.MaximumAge,
+    c.DistanceKm
+FROM dbo.Categories AS c
+INNER JOIN dbo.Events AS e
+    ON c.EventId = e.EventId
+ORDER BY e.EventId, c.CategoryId;
+GO
