@@ -381,3 +381,20 @@ INNER JOIN dbo.Events AS e
     ON c.EventId = e.EventId
 ORDER BY e.EventId, c.CategoryId;
 GO
+-- Verifying participant enrolments
+SELECT
+    en.EnrolmentId,
+    CONCAT(u.FirstName, N' ', u.LastName) AS Participant,
+    e.Name AS EventName,
+    c.Name AS Category,
+    en.Status,
+    en.EnrolmentDate
+FROM dbo.Enrolments AS en
+INNER JOIN dbo.Users AS u
+    ON en.ParticipantId = u.UserId
+INNER JOIN dbo.Events AS e
+    ON en.EventId = e.EventId
+INNER JOIN dbo.Categories AS c
+    ON en.CategoryId = c.CategoryId
+ORDER BY en.EnrolmentId;
+GO
