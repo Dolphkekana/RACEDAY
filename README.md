@@ -176,3 +176,135 @@ The complete API specification is available in:
 ```
 
 The endpoint plan contains the HTTP methods, routes, descriptions, role requirements, request bodies and expected response codes.
+## Authentication and Authorisation
+
+RaceDay uses session-based authentication.
+
+The API must:
+
+- Authenticate users using their email and password.
+- Store the authenticated user's identity and role in the server-side session.
+- Protect endpoints that require authentication.
+- Enforce Organiser-only operations.
+- Enforce Participant-only operations.
+- Prevent users from accessing resources they do not have permission to manage.
+- Never return password hashes through API responses.
+
+
+
+### Access Model
+
+
+| Feature               | Public | Organiser | Participant |
+| --------------------- | ------ | --------- | ----------- |
+| Register              | Yes    | Yes       | Yes         |
+| Login                 | Yes    | Yes       | Yes         |
+| Browse events         | Yes    | Yes       | Yes         |
+| Create event          | No     | Yes       | No          |
+| Manage own events     | No     | Yes       | No          |
+| Enrol in event        | No     | No        | Yes         |
+| View own enrolments   | No     | No        | Yes         |
+| View event enrolments | No     | Yes       | No          |
+| Record results        | No     | Yes       | No          |
+| View own results      | No     | No        | Yes         |
+
+
+
+
+## Project Structure
+
+The intended repository structure is:
+
+```
+RaceDay/
+│
+├── docs/
+│   ├── RaceDay-ERD.png
+│   ├── RaceDay-API-Endpoint-Plan.md
+│   └── RaceDay-Database.sql
+│
+├── src/
+│   └── RaceDay.Api/
+│       ├── Controllers/
+│       ├── Data/
+│       ├── Models/
+│       ├── DTOs/
+│       ├── Services/
+│       ├── Middleware/
+│       └── Program.cs
+│
+├── tests/
+│   └── RaceDay.Api.Tests/
+│
+├── .github/
+│   └── workflows/
+│
+├── README.md
+└── RaceDay.sln
+```
+
+The final implementation structure may be adjusted during Part 2 if required by the ASP.NET Core project setup.
+
+## Getting Started
+
+
+
+### Prerequisites
+
+Install the following:
+
+- .NET SDK compatible with the project target framework.
+- SQL Server or SQL Server Express.
+- SQL Server Management Studio (SSMS).
+- Git.
+- Visual Studio or Visual Studio Code.
+
+
+
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd RaceDay
+```
+
+
+
+### 2. Create the Database
+
+Open:
+
+```
+/docs/RaceDay-Database.sql
+```
+
+Run the script in SQL Server Management Studio.
+
+The script creates:
+
+- The RaceDay database.
+- All six database tables.
+- Primary and foreign keys.
+- Validation constraints.
+- Unique constraints.
+- Indexes.
+- Sample data.
+- Verification queries.
+
+
+
+### 3. Configure the Connection String
+
+Update the application's configuration with the SQL Server connection string.
+
+Example:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=RaceDay;Trusted_Connection=True;TrustServerCertificate=True;"
+  }
+}
+```
+
+The actual connection string should match the SQL Server installation being used.
