@@ -264,8 +264,8 @@ Install the following:
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd RaceDay
+git clone <https://github.com/Dolphkekana/RACEDAY>
+cd RACEDAY
 ```
 
 
@@ -308,3 +308,137 @@ Example:
 ```
 
 The actual connection string should match the SQL Server installation being used.
+### 4. Restore Dependencies
+
+From the project directory:
+
+```bash
+dotnet restore
+```
+
+
+
+### 5. Build the Project
+
+```bash
+dotnet build
+```
+
+
+
+### 6. Run the API
+
+```bash
+dotnet run
+```
+
+The terminal will display the local address used by the application.
+
+### 7. Open Swagger
+
+When the API is running, open the Swagger URL shown by the application.
+
+Swagger will provide an interactive view of the API endpoints and will be used to test the API during development.
+
+## Testing
+
+The project will use automated tests to verify important API behaviour.
+
+Testing will cover:
+
+- User registration.
+- Login and logout.
+- Invalid authentication.
+- Role-based access control.
+- Event creation.
+- Event updates.
+- Event deletion.
+- Category management.
+- Participant enrolment.
+- Duplicate enrolment prevention.
+- Enrolment status updates.
+- Result creation.
+- Result updates.
+- Result retrieval.
+- Invalid IDs.
+- Missing resources.
+- Validation failures.
+
+Run the automated tests with:
+
+```bash
+dotnet test
+```
+## HTTP Response Standards
+
+The API uses standard HTTP response codes.
+
+
+| Code             | Usage                                                    |
+| ---------------- | -------------------------------------------------------- |
+| 200 OK           | Successful request returning data.                       |
+| 201 Created      | Resource successfully created.                           |
+| 204 No Content   | Successful request with no response body.                |
+| 400 Bad Request  | Invalid request data.                                    |
+| 401 Unauthorized | Authentication is required or invalid.                   |
+| 403 Forbidden    | User is authenticated but lacks permission.              |
+| 404 Not Found    | Requested resource does not exist.                       |
+| 409 Conflict     | Request conflicts with existing data or a business rule. |
+
+
+
+
+## Validation and Business Rules
+
+The API validates incoming data before writing it to the database.
+
+Important rules include:
+
+- Email addresses must be unique.
+- User roles must be valid.
+- Event distances must be greater than zero.
+- Category ages must be valid.
+- Category age ranges must be logical.
+- An enrolment must reference an existing event.
+- An enrolment must reference an existing category.
+- A selected category must belong to the event being entered.
+- A Participant cannot enrol in the same event more than once.
+- An enrolment can have at most one result.
+- Finishing positions must be greater than zero.
+- Organisers may only manage events they own.
+- Participants may only access their own participant-specific information.
+- Invalid or unauthorised requests must return appropriate HTTP status codes.
+
+
+
+## Development Workflow
+
+RaceDay follows a staged development process.
+
+```
+Part 1
+  |
+  +-- Database Design
+  |
+  +-- ERD
+  |
+  +-- API Endpoint Plan
+  |
+  +-- SQL Script
+  |
+  +-- Repository / CI Setup
+  |
+  v
+Part 2
+  |
+  +-- ASP.NET Core API
+  +-- Authentication
+  +-- Entity Framework Core
+  +-- Controllers / Services
+  +-- Validation
+  +-- Swagger
+  +-- Automated Tests
+  +-- CI/CD
+```
+
+The Part 1 database and API documents form the specification for the Part 2 implementation.
