@@ -398,3 +398,23 @@ INNER JOIN dbo.Categories AS c
     ON en.CategoryId = c.CategoryId
 ORDER BY en.EnrolmentId;
 GO
+-- Verifying race results
+SELECT
+    r.ResultId,
+    CONCAT(u.FirstName, N' ', u.LastName) AS Participant,
+    e.Name AS EventName,
+    c.Name AS Category,
+    r.FinishTime,
+    r.FinishingPosition,
+    r.RecordedAt
+FROM dbo.Results AS r
+INNER JOIN dbo.Enrolments AS en
+    ON r.EnrolmentId = en.EnrolmentId
+INNER JOIN dbo.Users AS u
+    ON en.ParticipantId = u.UserId
+INNER JOIN dbo.Events AS e
+    ON en.EventId = e.EventId
+INNER JOIN dbo.Categories AS c
+    ON en.CategoryId = c.CategoryId
+ORDER BY r.FinishingPosition;
+GO
