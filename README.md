@@ -442,3 +442,88 @@ Part 2
 ```
 
 The Part 1 database and API documents form the specification for the Part 2 implementation.
+## Documentation
+
+Part 1 documentation is stored inside the `/docs` directory.
+
+
+| File                         | Description                                                                             |
+| ---------------------------- | --------------------------------------------------------------------------------------- |
+| RaceDay-ERD.png              | Entity Relationship Diagram showing the database entities and relationships.            |
+| RaceDay-API-Endpoint-Plan.md | Complete REST API endpoint specification.                                               |
+| RaceDay-Database.sql         | SQL Server database creation, constraints, indexes, seed data and verification queries. |
+
+
+
+
+## Sample Accounts
+
+The database contains development accounts for testing.
+
+
+| Role        | Email                                                               |
+| ----------- | ------------------------------------------------------------------- |
+| Organiser   | [adolf.kekana@raceday.co.za](mailto:adolf.kekana@raceday.co.za) |
+| Organiser   | [kabelo.dlamini@raceday.co.za](mailto:kabelo.dlamini@raceday.co.za) |
+| Participant | [thabang.sekwati@example.com'](mailto:thabang.sekwati@example.com') |
+| Participant | [amanda.nkosi@example.com](mailto:amanda.nkosi@example.com)         |
+
+
+Development password:
+
+```
+RaceDay@2026
+```
+
+These accounts are intended for local development and testing only.
+
+Production credentials must be secure and must never be committed to source control.
+
+## Project Status
+
+
+
+### Part 1
+
+- [x] ERD designed.
+- [x] API endpoint plan created.
+- [x] SQL Server database script created.
+- [x] Database relationships defined.
+- [x] Primary and foreign keys defined.
+- [x] Validation constraints defined.
+- [x] Indexes defined.
+- [x] Sample data prepared.
+- [x] SQL script tested in the target SQL Server environment.
+- [x] Repository and CI evidence completed.
+
+
+
+### Part 2
+
+- [ ] ASP.NET Core Web API implementation.
+- [ ] Entity Framework Core integration.
+- [ ] Session-based authentication.
+- [ ] Role-based authorisation.
+- [ ] Event management.
+- [ ] Category management.
+- [ ] Participant enrolments.
+- [ ] Result management.
+- [ ] Swagger documentation.
+- [ ] Automated tests.
+- [ ] CI/CD pipeline.
+
+
+
+## Repository Quality
+
+The repository aims to maintain:
+
+- Clear project structure.
+- Meaningful naming conventions.
+- Small and focused commits.
+- Useful comments where logic is not immediately obvious.
+- No committed secrets.
+- Repeatable database setup.
+- Documented API behaviour.
+- Automated build and test checks.
+- Consistency between the Part 1 design and Part 2 implementation.
