@@ -452,9 +452,13 @@ Part 1 documentation is stored inside the `/docs` directory.
 | RaceDay-ERD.png              | Entity Relationship Diagram showing the database entities and relationships.            |
 | RaceDay-API-Endpoint-Plan.md | Complete REST API endpoint specification.                                               |
 | RaceDay-Database.sql         | SQL Server database creation, constraints, indexes, seed data and verification queries. |
+| ci-run.png                   | Screenshot of a successful GitHub Actions CI build.                                     |
 
+## CI Successful Build
 
+Evidence of a successful **RaceDay Part 1 Validation** workflow run on GitHub Actions:
 
+<img src="docs/ci-run.png" alt="CI Successful Build" width="800" />
 
 ## Sample Accounts
 
