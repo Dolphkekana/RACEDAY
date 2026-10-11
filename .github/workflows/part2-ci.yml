@@ -1,0 +1,30 @@
+name: RaceDay Part 2 CI
+
+on:
+  push:
+    branches: [ "main", "part-2-api" ]
+  pull_request:
+    branches: [ "main", "part-2-api" ]
+
+jobs:
+  build-and-test:
+    name: Build Solution and Run Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore RaceDay.sln
+
+      - name: Build solution
+        run: dotnet build RaceDay.sln --no-restore --configuration Release
+
+      - name: Run unit tests
+        run: dotnet test RaceDay.sln --no-build --configuration Release --verbosity normal
