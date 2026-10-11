@@ -55,14 +55,21 @@ Authentication is session-based.
 
 | HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
 |---|---|---|---|---|---|
-| POST | `/api/auth/register` | Creates a new RaceDay account and assigns the selected Organiser or Participant role. | None | `{ "firstName": "Dolph", "lastName": "Kekana", "email": "Dolph@example.com", "password": "SecurePassword123!", "phoneNumber": "0712345678", "dateOfBirth": "2002-05-14", "role": "Participant" }` | `201 Created` with the created user's public profile. `400 Bad Request` for invalid data. `409 Conflict` if the email is already registered. |
+| POST | `/api/auth/register` | Creates a public Participant account. Organiser privileges cannot be requested through public registration. | None | `{ "firstName": "Dolph", "lastName": "Kekana", "email": "Dolph@example.com", "password": "SecurePassword123!", "phoneNumber": "0712345678", "dateOfBirth": "2002-05-14", "role": "Participant" }` | `201 Created` with the created user's public profile. `400 Bad Request` for invalid data or an unsupported role. `409 Conflict` if the email is already registered. |
 
 ### Registration Rules
 
 - Email addresses must be unique.
 - The password must be validated and securely hashed before storage.
 - The password must never be returned in the response.
-- The role must be either `Organiser` or `Participant`.
+- Public registration must use the `Participant` role.
+- An authenticated Organiser creates additional Organiser accounts through `POST /api/auth/provision-organiser`.
+
+## 3.4 Provision Organiser
+
+| HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
+|---|---|---|---|---|---|
+| POST | `/api/auth/provision-organiser` | Creates an Organiser account from an existing authenticated Organiser account. | Organiser | `{ "firstName": "Kabelo", "lastName": "Dlamini", "email": "kabelo@example.com", "password": "SecurePassword123!", "phoneNumber": "0723456789", "dateOfBirth": "1987-11-02" }` | `201 Created` with the public profile. `401 Unauthorized` if not logged in. `403 Forbidden` for Participants. `409 Conflict` if the email is already registered. |
 
 ---
 
@@ -375,5 +382,4 @@ When implementation begins:
 10. Any necessary deviation from this plan must be documented and justified.
 
 The goal is for the Part 2 implementation to closely match this approved Part 1 API specification.
-
 

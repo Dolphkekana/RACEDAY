@@ -1,13 +1,42 @@
 using System.Reflection;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using RaceDay.Api.Auth;
 using RaceDay.Api.Data;
+using RaceDay.Api.Documentation;
+using RaceDay.Api.Models;
+using RaceDay.Api.Services;
+using AppAuthenticationService = RaceDay.Api.Services.AuthenticationService;
+using AppAuthenticationServiceContract = RaceDay.Api.Services.IAuthenticationService;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //Register controller services 
 builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = "RaceDay.Session";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+        ? CookieSecurePolicy.SameAsRequest
+        : CookieSecurePolicy.Always;
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+});
+builder.Services
+    .AddAuthentication(UserSession.Scheme)
+    .AddScheme<AuthenticationSchemeOptions, SessionAuthenticationHandler>(
+        UserSession.Scheme,
+        _ => { });
+builder.Services.AddAuthorization();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<AppAuthenticationServiceContract, AppAuthenticationService>();
 
 //Register EF Core DbContext with SQL Server 
 builder.Services.AddDbContext<RaceDayDbContext>(options =>
@@ -26,6 +55,14 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1",
         Description = "RESTful Web API for South African community sports events (running, walking, cycling)."
     });
+    options.AddSecurityDefinition("SessionCookie", new OpenApiSecurityScheme
+    {
+        Name = "RaceDay.Session",
+        In = ParameterLocation.Cookie,
+        Type = SecuritySchemeType.ApiKey,
+        Description = "Authenticated server-side session cookie created by POST /api/auth/login."
+    });
+    options.OperationFilter<SessionSecurityOperationFilter>();
 
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
@@ -51,6 +88,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseSession();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
