@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using RaceDay.Api.Contracts;
 using RaceDay.Api.Controllers;
 using Xunit;
 
 namespace RaceDay.Api.Tests;
 
 
- // Unit tests verifying the HealthController foundation endpoint
-
-public class HealthControllerTests
+public sealed class HealthControllerTests
 {
     [Fact]
     public void GetHealth_ReturnsOkResult_WithHealthyStatus()
@@ -19,7 +18,10 @@ public class HealthControllerTests
         var result = controller.GetHealth();
 
         // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.NotNull(okResult.Value);
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        var response = Assert.IsType<HealthResponse>(okResult.Value);
+        Assert.Equal("Healthy", response.Status);
+        Assert.Equal("RaceDay API", response.Service);
+        Assert.True(response.Timestamp > DateTimeOffset.UtcNow.AddMinutes(-1));
     }
 }

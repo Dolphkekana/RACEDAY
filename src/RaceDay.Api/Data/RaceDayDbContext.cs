@@ -3,12 +3,10 @@ using RaceDay.Api.Models;
 
 namespace RaceDay.Api.Data;
 
-/*
- Database context for the RaceDay API using EF Core Code-First.
- Configures entity mappings, relationships, unique constraints, and decimal precision
- matching the approved Part 1 database script.
-*/
-public class RaceDayDbContext : DbContext
+/// <summary>
+/// Database context for the RaceDay API using EF Core Code-First.
+/// </summary>
+public sealed class RaceDayDbContext : DbContext
 {
     public RaceDayDbContext(DbContextOptions<RaceDayDbContext> options)
         : base(options)
@@ -26,7 +24,6 @@ public class RaceDayDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        //User entity mapping
         modelBuilder.Entity<User>(entity =>
         {
             entity.ToTable("Users");
@@ -38,10 +35,15 @@ public class RaceDayDbContext : DbContext
             entity.Property(u => u.PasswordHash).HasMaxLength(255).IsRequired();
             entity.Property(u => u.PhoneNumber).HasMaxLength(20).IsRequired();
             entity.Property(u => u.Role).HasMaxLength(20).IsRequired();
-            entity.Property(u => u.CreatedAt).HasPrecision(0);
+            entity.Property(u => u.DateOfBirth).HasColumnType("date");
+            entity.Property(u => u.CreatedAt)
+                .HasColumnType("datetime2(0)")
+                .HasDefaultValueSql("SYSDATETIME()");
+            entity.ToTable(table => table.HasCheckConstraint(
+                "CK_Users_Role",
+                "[Role] IN (N'Organiser', N'Participant')"));
         });
 
-        //EventType entity mapping
         modelBuilder.Entity<EventType>(entity =>
         {
             entity.ToTable("EventTypes");
@@ -50,7 +52,6 @@ public class RaceDayDbContext : DbContext
             entity.Property(et => et.Name).HasMaxLength(50).IsRequired();
         });
 
-        //Event entity mapping
         modelBuilder.Entity<Event>(entity =>
         {
             entity.ToTable("Events");
@@ -58,10 +59,20 @@ public class RaceDayDbContext : DbContext
             entity.Property(e => e.Name).HasMaxLength(150).IsRequired();
             entity.Property(e => e.Description).HasMaxLength(1000).IsRequired();
             entity.Property(e => e.Location).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.EventDate).HasColumnType("date");
             entity.Property(e => e.DistanceKm).HasPrecision(6, 2).IsRequired();
             entity.Property(e => e.BannerImageUrl).HasMaxLength(500);
-            entity.Property(e => e.CreatedAt).HasPrecision(0);
-            entity.Property(e => e.UpdatedAt).HasPrecision(0);
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime2(0)")
+                .HasDefaultValueSql("SYSDATETIME()");
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
+            entity.ToTable(table =>
+            {
+                table.HasCheckConstraint("CK_Events_DistanceKm", "[DistanceKm] > 0");
+                table.HasCheckConstraint(
+                    "CK_Events_Date",
+                    "[EventDate] >= CONVERT(date, [CreatedAt])");
+            });
 
             entity.HasOne(e => e.Organiser)
                 .WithMany(u => u.OrganizedEvents)
@@ -74,7 +85,6 @@ public class RaceDayDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        //Category entity mapping
         modelBuilder.Entity<Category>(entity =>
         {
             entity.ToTable("Categories");
@@ -82,6 +92,21 @@ public class RaceDayDbContext : DbContext
             entity.HasIndex(c => new { c.EventId, c.Name }).IsUnique();
             entity.Property(c => c.Name).HasMaxLength(100).IsRequired();
             entity.Property(c => c.DistanceKm).HasPrecision(6, 2);
+            entity.ToTable(table =>
+            {
+                table.HasCheckConstraint(
+                    "CK_Categories_MinimumAge",
+                    "[MinimumAge] IS NULL OR [MinimumAge] >= 0");
+                table.HasCheckConstraint(
+                    "CK_Categories_MaximumAge",
+                    "[MaximumAge] IS NULL OR [MaximumAge] >= 0");
+                table.HasCheckConstraint(
+                    "CK_Categories_AgeRange",
+                    "[MinimumAge] IS NULL OR [MaximumAge] IS NULL OR [MinimumAge] <= [MaximumAge]");
+                table.HasCheckConstraint(
+                    "CK_Categories_DistanceKm",
+                    "[DistanceKm] IS NULL OR [DistanceKm] > 0");
+            });
 
             entity.HasOne(c => c.Event)
                 .WithMany(e => e.Categories)
@@ -89,14 +114,18 @@ public class RaceDayDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // Enrolment entity mapping 
         modelBuilder.Entity<Enrolment>(entity =>
         {
             entity.ToTable("Enrolments");
             entity.HasKey(e => e.EnrolmentId);
             entity.HasIndex(e => new { e.ParticipantId, e.EventId }).IsUnique();
             entity.Property(e => e.Status).HasMaxLength(20).IsRequired();
-            entity.Property(e => e.EnrolmentDate).HasPrecision(0);
+            entity.Property(e => e.EnrolmentDate)
+                .HasColumnType("datetime2(0)")
+                .HasDefaultValueSql("SYSDATETIME()");
+            entity.ToTable(table => table.HasCheckConstraint(
+                "CK_Enrolments_Status",
+                "[Status] IN (N'Pending', N'Confirmed', N'Cancelled')"));
 
             entity.HasOne(e => e.Participant)
                 .WithMany(u => u.Enrolments)
@@ -114,15 +143,19 @@ public class RaceDayDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        //Result entity mapping 
         modelBuilder.Entity<Result>(entity =>
         {
             entity.ToTable("Results");
             entity.HasKey(r => r.ResultId);
             entity.HasIndex(r => r.EnrolmentId).IsUnique();
-            entity.Property(r => r.FinishTime).HasPrecision(0).IsRequired();
+            entity.Property(r => r.FinishTime).HasColumnType("time(0)").IsRequired();
             entity.Property(r => r.FinishingPosition).IsRequired();
-            entity.Property(r => r.RecordedAt).HasPrecision(0);
+            entity.Property(r => r.RecordedAt)
+                .HasColumnType("datetime2(0)")
+                .HasDefaultValueSql("SYSDATETIME()");
+            entity.ToTable(table => table.HasCheckConstraint(
+                "CK_Results_FinishingPosition",
+                "[FinishingPosition] > 0"));
 
             entity.HasOne(r => r.Enrolment)
                 .WithOne(e => e.Result)

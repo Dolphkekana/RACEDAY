@@ -1,27 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
+using RaceDay.Api.Contracts;
 
 namespace RaceDay.Api.Controllers;
 
-/*
- Provides health verification endpoints for monitoring API startup and operational status
-*/
+/// <summary>
+/// Provides a lightweight endpoint for checking whether the API has started.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class HealthController : ControllerBase
+public sealed class HealthController : ControllerBase
 {
-    /*
-     GET /api/health
-     Returns the current health status of the API.
-    */
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult GetHealth()
+    [ProducesResponseType(typeof(HealthResponse), StatusCodes.Status200OK)]
+    public ActionResult<HealthResponse> GetHealth()
     {
-        return Ok(new
-        {
-            status = "Healthy",
-            service = "RaceDay API",
-            timestamp = DateTime.UtcNow
-        });
+        return Ok(new HealthResponse(
+            "Healthy",
+            "RaceDay API",
+            DateTimeOffset.UtcNow));
     }
 }

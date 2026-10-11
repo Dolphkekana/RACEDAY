@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 //Register controller services 
 builder.Services.AddControllers();
+builder.Services.AddProblemDetails();
 
 //Register EF Core DbContext with SQL Server 
 builder.Services.AddDbContext<RaceDayDbContext>(options =>
@@ -36,7 +37,9 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// Enable Swagger UI in development and test environments 
+app.UseExceptionHandler();
+
+// Enable Swagger UI in development so the API can be explored without exposing it by default in production.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

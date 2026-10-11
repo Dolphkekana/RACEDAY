@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using RaceDay.Api.Data;
 using RaceDay.Api.Models;
 using Xunit;
@@ -71,5 +73,31 @@ public class DbContextFoundationTests
 
         // Assert
         Assert.Equal(3, count);
+    }
+
+    [Fact]
+    public void SqlServerModel_UsesPartOneDateTimeAndConstraintMappings()
+    {
+        var options = new DbContextOptionsBuilder<RaceDayDbContext>()
+            .UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=RaceDay;Trusted_Connection=True")
+            .Options;
+        using var context = new RaceDayDbContext(options);
+        var model = context.GetService<IDesignTimeModel>().Model;
+
+        var eventDate = model.FindEntityType(typeof(Event))!
+            .FindProperty(nameof(Event.EventDate))!;
+        var finishTime = model.FindEntityType(typeof(Result))!
+            .FindProperty(nameof(Result.FinishTime))!;
+
+        Assert.Equal("date", eventDate.GetColumnType());
+        Assert.Equal("time(0)", finishTime.GetColumnType());
+        Assert.Contains(
+            "CK_Users_Role",
+            model.FindEntityType(typeof(User))!.GetCheckConstraints()
+                .Select(constraint => constraint.Name));
+        Assert.Contains(
+            "CK_Enrolments_Status",
+            model.FindEntityType(typeof(Enrolment))!.GetCheckConstraints()
+                .Select(constraint => constraint.Name));
     }
 }
