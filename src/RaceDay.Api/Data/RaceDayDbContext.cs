@@ -111,7 +111,7 @@ public sealed class RaceDayDbContext : DbContext
             entity.HasOne(c => c.Event)
                 .WithMany(e => e.Categories)
                 .HasForeignKey(c => c.EventId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Enrolment>(entity =>
