@@ -5,14 +5,16 @@ using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Contracts;
 using RaceDay.Api.Data;
 using RaceDay.Api.Models;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace RaceDay.Api.Controllers;
 
 [ApiController]
+[Produces("application/json")]
 [Route("api/events")]
 public sealed class EventsController(RaceDayDbContext dbContext) : ControllerBase
 {
-/// <summary>Lists events with optional type, location, date, and distance filters.</summary>
+    [SwaggerOperation(Summary = "List events", Description = "Public. Lists all events. Optional filters: eventTypeId, location, eventDate, minDistance and maxDistance.")]
     [HttpGet]
     [AllowAnonymous]
     [ProducesResponseType(typeof(IReadOnlyCollection<EventResponse>), StatusCodes.Status200OK)]
@@ -64,6 +66,7 @@ public sealed class EventsController(RaceDayDbContext dbContext) : ControllerBas
         return Ok(events);
     }
 
+    [SwaggerOperation(Summary = "Get one event", Description = "Public. Returns one event with its event type and categories.")]
     [HttpGet("{eventId:int}")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(EventResponse), StatusCodes.Status200OK)]
@@ -83,7 +86,8 @@ public sealed class EventsController(RaceDayDbContext dbContext) : ControllerBas
         return raceEvent is null ? NotFound() : Ok(raceEvent);
     }
 
-    /// <summary>Creates an event owned by the authenticated Organiser.</summary>
+    [SwaggerOperation(Summary = "Create an event", Description = "Organiser only. Send JSON with eventTypeId, name, description, eventDate (today or later), location, distanceKm and an optional bannerImageUrl.")]
+    [Consumes("application/json")]
     [HttpPost]
     [Authorize(Roles = "Organiser")]
     [ProducesResponseType(typeof(EventResponse), StatusCodes.Status201Created)]
@@ -128,6 +132,8 @@ public sealed class EventsController(RaceDayDbContext dbContext) : ControllerBas
             await GetResponseAsync(raceEvent.EventId, cancellationToken));
     }
 
+    [SwaggerOperation(Summary = "Update an event", Description = "Organiser only, and only the Organiser who created the event. Uses the same JSON body as create.")]
+    [Consumes("application/json")]
     [HttpPut("{eventId:int}")]
     [Authorize(Roles = "Organiser")]
     [ProducesResponseType(typeof(EventResponse), StatusCodes.Status200OK)]
@@ -181,7 +187,7 @@ public sealed class EventsController(RaceDayDbContext dbContext) : ControllerBas
         return Ok(await GetResponseAsync(eventId, cancellationToken));
     }
 
-    /// <summary>Deletes an owned event when no related records prevent deletion.</summary>
+    [SwaggerOperation(Summary = "Delete an event", Description = "Organiser only, and only the owner. Returns 409 if the event still has categories or enrolments.")]
     [HttpDelete("{eventId:int}")]
     [Authorize(Roles = "Organiser")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
