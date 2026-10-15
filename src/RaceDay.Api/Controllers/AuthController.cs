@@ -3,15 +3,19 @@ using Microsoft.AspNetCore.Mvc;
 using RaceDay.Api.Auth;
 using RaceDay.Api.Contracts;
 using RaceDay.Api.Services;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace RaceDay.Api.Controllers;
 
 [ApiController]
+[Produces("application/json")]
 [Route("api/auth")]
 public sealed class AuthController(
     IAuthenticationService authenticationService,
     IHttpContextAccessor httpContextAccessor) : ControllerBase
 {
+    [SwaggerOperation(Summary = "Register a new account", Description = "Creates an Organiser or Participant account. Send JSON with firstName, lastName, email, password (8+ chars with upper, lower and a digit), phoneNumber, dateOfBirth (yyyy-MM-dd) and role. The password is stored hashed.")]
+    [Consumes("application/json")]
     [HttpPost("register")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status201Created)]
@@ -37,9 +41,12 @@ public sealed class AuthController(
         }
     }
 
+    [SwaggerOperation(Summary = "Create another Organiser account", Description = "Organiser only. Creates a new Organiser account using the same fields as registration without the role.")]
+    [Consumes("application/json")]
     [HttpPost("provision-organiser")]
     [Authorize(Roles = "Organiser")]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -65,6 +72,8 @@ public sealed class AuthController(
         }
     }
 
+    [SwaggerOperation(Summary = "Log in and start a session", Description = "Checks the email and password. On success the user id and role are stored in the server-side session and the RaceDay.Session cookie is returned.")]
+    [Consumes("application/json")]
     [HttpPost("login")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
@@ -94,6 +103,7 @@ public sealed class AuthController(
         return Ok(response);
     }
 
+    [SwaggerOperation(Summary = "Log out and clear the session", Description = "Any logged in user. Clears the server-side session.")]
     [HttpPost("logout")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
