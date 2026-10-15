@@ -76,6 +76,21 @@ public class DbContextFoundationTests
     }
 
     [Fact]
+    public async Task EnsureCreated_SeedsRunWalkAndCycleEventTypesAsync()
+    {
+        // Arrange
+        var options = CreateNewContextOptions();
+        using var context = new RaceDayDbContext(options);
+
+        // Act
+        await context.Database.EnsureCreatedAsync();
+        var names = await context.EventTypes.OrderBy(et => et.EventTypeId).Select(et => et.Name).ToListAsync();
+
+        // Assert
+        Assert.Equal(new[] { "Run", "Walk", "Cycle" }, names);
+    }
+
+    [Fact]
     public void SqlServerModel_UsesPartOneDateTimeAndConstraintMappings()
     {
         var options = new DbContextOptionsBuilder<RaceDayDbContext>()

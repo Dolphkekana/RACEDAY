@@ -212,7 +212,6 @@ public sealed class EventsCategoriesApplicationFactory : WebApplicationFactory<P
             using var scope = services.BuildServiceProvider().CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<RaceDayDbContext>();
             dbContext.Database.EnsureCreated();
-            dbContext.EventTypes.Add(new EventType { EventTypeId = 1, Name = "Run" });
             dbContext.Users.AddRange(
                 TestUserFactory.Create("Participant", "participant@example.com", 1),
                 TestUserFactory.Create("Organiser", "organiser@example.com", 2));

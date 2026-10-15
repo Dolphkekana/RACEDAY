@@ -50,6 +50,12 @@ public sealed class RaceDayDbContext : DbContext
             entity.HasKey(et => et.EventTypeId);
             entity.HasIndex(et => et.Name).IsUnique();
             entity.Property(et => et.Name).HasMaxLength(50).IsRequired();
+
+            // Seed the three event types from the Part 1 script so events can be created straight away
+            entity.HasData(
+                new EventType { EventTypeId = 1, Name = "Run" },
+                new EventType { EventTypeId = 2, Name = "Walk" },
+                new EventType { EventTypeId = 3, Name = "Cycle" });
         });
 
         modelBuilder.Entity<Event>(entity =>
