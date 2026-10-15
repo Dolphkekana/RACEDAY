@@ -1,10 +1,11 @@
 name: RaceDay Part 2 CI
 
 on:
+  # Build and test on every push to any branch and on every pull request
   push:
-    branches: [ "main", "part-2-api" ]
+    branches: [ "**" ]
   pull_request:
-    branches: [ "main", "part-2-api" ]
+  workflow_dispatch:
 
 jobs:
   build-and-test:
