@@ -62,6 +62,8 @@ builder.Services.AddSwaggerGen(options =>
         Type = SecuritySchemeType.ApiKey,
         Description = "Authenticated server-side session cookie created by POST /api/auth/login."
     });
+    // Read the [SwaggerOperation] summaries and descriptions on each action
+    options.EnableAnnotations();
     options.OperationFilter<SessionSecurityOperationFilter>();
 
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
