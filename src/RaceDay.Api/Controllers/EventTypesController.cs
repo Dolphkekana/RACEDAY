@@ -3,15 +3,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Contracts;
 using RaceDay.Api.Data;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace RaceDay.Api.Controllers;
 
 [ApiController]
+[Produces("application/json")]
 [Route("api/event-types")]
 [AllowAnonymous]
 public sealed class EventTypesController(RaceDayDbContext dbContext) : ControllerBase
 {
-    /// <summary>Lists the event types available to the API.</summary>
+    [SwaggerOperation(Summary = "List event types", Description = "Public. Lists the event types (Run, Walk, Cycle).")]
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyCollection<EventTypeResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyCollection<EventTypeResponse>>> GetAll(
@@ -26,6 +28,7 @@ public sealed class EventTypesController(RaceDayDbContext dbContext) : Controlle
         return Ok(eventTypes);
     }
 
+    [SwaggerOperation(Summary = "Get one event type", Description = "Public. Returns one event type by id.")]
     [HttpGet("{eventTypeId:int}")]
     [ProducesResponseType(typeof(EventTypeResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
