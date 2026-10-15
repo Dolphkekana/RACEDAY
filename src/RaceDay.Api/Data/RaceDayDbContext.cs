@@ -3,9 +3,7 @@ using RaceDay.Api.Models;
 
 namespace RaceDay.Api.Data;
 
-/// <summary>
-/// Database context for the RaceDay API using EF Core Code-First.
-/// </summary>
+// Database context for the RaceDay API using EF Core Code-First.
 public sealed class RaceDayDbContext : DbContext
 {
     public RaceDayDbContext(DbContextOptions<RaceDayDbContext> options)

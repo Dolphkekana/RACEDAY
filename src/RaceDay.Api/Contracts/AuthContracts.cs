@@ -2,9 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RaceDay.Api.Contracts;
 
-/// <summary>
-/// Payload for creating a new Organiser or Participant account.
-/// </summary>
+// Payload for creating a new Organiser or Participant account.
 public sealed record RegisterRequest
 {
     [Required, StringLength(100, MinimumLength = 2)]
@@ -31,9 +29,7 @@ public sealed record RegisterRequest
     public required string Role { get; init; }
 }
 
-/// <summary>
-/// Payload for provisioning an Organiser account from an authenticated Organiser account.
-/// </summary>
+// Payload for provisioning an Organiser account from an authenticated Organiser account.
 public sealed record ProvisionOrganiserRequest
 {
     [Required, StringLength(100, MinimumLength = 2)]
@@ -56,9 +52,7 @@ public sealed record ProvisionOrganiserRequest
     public DateTime DateOfBirth { get; init; }
 }
 
-/// <summary>
-/// Payload for authenticating an existing RaceDay account.
-/// </summary>
+// Payload for authenticating an existing RaceDay account.
 public sealed record LoginRequest
 {
     [Required, EmailAddress, StringLength(255)]
@@ -68,9 +62,7 @@ public sealed record LoginRequest
     public required string Password { get; init; }
 }
 
-/// <summary>
-/// Safe user information returned by authentication and profile endpoints.
-/// </summary>
+// Safe user information returned by authentication and profile endpoints.
 public sealed record UserResponse(
     int UserId,
     string FirstName,
@@ -80,9 +72,7 @@ public sealed record UserResponse(
     DateTime DateOfBirth,
     string Role);
 
-/// <summary>
-/// Payload for updating the authenticated user's editable profile details.
-/// </summary>
+// Payload for updating the authenticated user's editable profile details.
 public sealed record UpdateProfileRequest
 {
     [Required, StringLength(100, MinimumLength = 2)]

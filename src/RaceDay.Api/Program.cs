@@ -1,4 +1,3 @@
-using System.Reflection;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -65,13 +64,6 @@ builder.Services.AddSwaggerGen(options =>
     // Read the [SwaggerOperation] summaries and descriptions on each action
     options.EnableAnnotations();
     options.OperationFilter<SessionSecurityOperationFilter>();
-
-    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
-    if (File.Exists(xmlPath))
-    {
-        options.IncludeXmlComments(xmlPath);
-    }
 });
 
 var app = builder.Build();

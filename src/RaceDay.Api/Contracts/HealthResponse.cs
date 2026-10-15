@@ -1,8 +1,6 @@
 namespace RaceDay.Api.Contracts;
 
-/// <summary>
-/// Describes the current availability of the RaceDay API.
-/// </summary>
+// Describes the current availability of the RaceDay API.
 public sealed record HealthResponse(
     string Status,
     string Service,
