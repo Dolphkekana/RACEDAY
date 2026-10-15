@@ -5,10 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Contracts;
 using RaceDay.Api.Data;
 using RaceDay.Api.Models;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace RaceDay.Api.Controllers;
 
 [ApiController]
+[Produces("application/json")]
 public sealed class EnrolmentsController(RaceDayDbContext dbContext) : ControllerBase
 {
     private static readonly string[] SupportedStatuses =
@@ -18,7 +20,8 @@ public sealed class EnrolmentsController(RaceDayDbContext dbContext) : Controlle
         "Cancelled"
     ];
 
-    /// <summary>Enrols the authenticated Participant in an event category.</summary>
+    [SwaggerOperation(Summary = "Enter an event", Description = "Participant only. Send JSON with categoryId. The participant comes from the session, so one user cannot enrol another.")]
+    [Consumes("application/json")]
     [HttpPost("api/events/{eventId:int}/enrolments")]
     [Authorize(Roles = "Participant")]
     [ProducesResponseType(typeof(EnrolmentResponse), StatusCodes.Status201Created)]
@@ -97,7 +100,7 @@ public sealed class EnrolmentsController(RaceDayDbContext dbContext) : Controlle
             await GetResponseAsync(enrolment.EnrolmentId, cancellationToken));
     }
 
-    /// <summary>Returns enrolments belonging to the authenticated Participant.</summary>
+    [SwaggerOperation(Summary = "List my enrolments", Description = "Participant only. Lists the enrolments of the logged in Participant.")]
     [HttpGet("api/enrolments/my")]
     [Authorize(Roles = "Participant")]
     [ProducesResponseType(typeof(IReadOnlyCollection<EnrolmentResponse>), StatusCodes.Status200OK)]
@@ -116,9 +119,7 @@ public sealed class EnrolmentsController(RaceDayDbContext dbContext) : Controlle
         return Ok(enrolments);
     }
 
-    /// <summary>
-    /// Returns an enrolment to its Participant or the Organiser who owns its event.
-    /// </summary>
+    [SwaggerOperation(Summary = "Get one enrolment", Description = "The Participant who owns the enrolment or the Organiser of the event.")]
     [HttpGet("api/enrolments/{enrolmentId:int}")]
     [Authorize]
     [ProducesResponseType(typeof(EnrolmentResponse), StatusCodes.Status200OK)]
@@ -147,7 +148,7 @@ public sealed class EnrolmentsController(RaceDayDbContext dbContext) : Controlle
         return Ok(enrolment);
     }
 
-    /// <summary>Lists enrolments for an event owned by the authenticated Organiser.</summary>
+    [SwaggerOperation(Summary = "List enrolments for an event", Description = "Organiser only, for an event they own.")]
     [HttpGet("api/events/{eventId:int}/enrolments")]
     [Authorize(Roles = "Organiser")]
     [ProducesResponseType(typeof(IReadOnlyCollection<EnrolmentResponse>), StatusCodes.Status200OK)]
@@ -181,7 +182,8 @@ public sealed class EnrolmentsController(RaceDayDbContext dbContext) : Controlle
         return Ok(enrolments);
     }
 
-    /// <summary>Updates an enrolment status for an event owned by the Organiser.</summary>
+    [SwaggerOperation(Summary = "Change an enrolment status", Description = "Organiser only, for an event they own. Send JSON with status: Pending, Confirmed or Cancelled.")]
+    [Consumes("application/json")]
     [HttpPut("api/enrolments/{enrolmentId:int}/status")]
     [Authorize(Roles = "Organiser")]
     [ProducesResponseType(typeof(EnrolmentResponse), StatusCodes.Status200OK)]
