@@ -65,6 +65,50 @@ public sealed class EventsCategoriesIntegrationTests
     }
 
     [Fact]
+    public async Task CreateEvent_RejectsPastDateAndUnknownEventType()
+    {
+        using var client = factory.CreateClient();
+        await LoginAsync(client, "organiser@example.com");
+
+        // An event in the past is not allowed
+        var pastDate = await client.PostAsJsonAsync("/api/events", new
+        {
+            eventTypeId = 1,
+            name = "Old Race",
+            description = "Already happened",
+            eventDate = DateTime.UtcNow.AddDays(-5).Date,
+            location = "Durban",
+            distanceKm = 5.00m
+        });
+        Assert.Equal(HttpStatusCode.BadRequest, pastDate.StatusCode);
+
+        // The event type must exist
+        var unknownType = await client.PostAsJsonAsync("/api/events", new
+        {
+            eventTypeId = 999,
+            name = "Mystery Race",
+            description = "Unknown type",
+            eventDate = DateTime.UtcNow.AddDays(10).Date,
+            location = "Durban",
+            distanceKm = 5.00m
+        });
+        Assert.Equal(HttpStatusCode.NotFound, unknownType.StatusCode);
+    }
+
+    [Fact]
+    public async Task EventTypes_AreListedPublicly()
+    {
+        using var client = factory.CreateClient();
+        var response = await client.GetAsync("/api/event-types");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var body = await response.Content.ReadAsStringAsync();
+        Assert.Contains("Run", body);
+        Assert.Contains("Walk", body);
+        Assert.Contains("Cycle", body);
+    }
+
+    [Fact]
     public async Task MissingEventAndCategoryReturnNotFound()
     {
         using var client = factory.CreateClient();
