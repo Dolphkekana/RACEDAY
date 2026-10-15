@@ -5,13 +5,16 @@ using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Contracts;
 using RaceDay.Api.Data;
 using RaceDay.Api.Models;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace RaceDay.Api.Controllers;
 
 [ApiController]
+[Produces("application/json")]
 public sealed class ResultsController(RaceDayDbContext dbContext) : ControllerBase
 {
-    /// <summary>Records a finish result for an enrolment managed by the event Organiser.</summary>
+    [SwaggerOperation(Summary = "Capture a result", Description = "Organiser only, for an event they own. Send JSON with finishTime (hh:mm:ss) and finishingPosition (1 or more).")]
+    [Consumes("application/json")]
     [HttpPost("api/enrolments/{enrolmentId:int}/result")]
     [Authorize(Roles = "Organiser")]
     [ProducesResponseType(typeof(ResultResponse), StatusCodes.Status201Created)]
@@ -80,7 +83,8 @@ public sealed class ResultsController(RaceDayDbContext dbContext) : ControllerBa
             await GetResponseAsync(result.ResultId, cancellationToken));
     }
 
-    /// <summary>Updates a result for an event managed by the authenticated Organiser.</summary>
+    [SwaggerOperation(Summary = "Update a result", Description = "Organiser only, for an event they own. Uses the same JSON body as capture.")]
+    [Consumes("application/json")]
     [HttpPut("api/results/{resultId:int}")]
     [Authorize(Roles = "Organiser")]
     [ProducesResponseType(typeof(ResultResponse), StatusCodes.Status200OK)]
@@ -120,7 +124,7 @@ public sealed class ResultsController(RaceDayDbContext dbContext) : ControllerBa
         return Ok(await GetResponseAsync(resultId, cancellationToken));
     }
 
-    /// <summary>Returns race results belonging to the authenticated Participant.</summary>
+    [SwaggerOperation(Summary = "List my results", Description = "Participant only. Lists the results of the logged in Participant.")]
     [HttpGet("api/results/my")]
     [Authorize(Roles = "Participant")]
     [ProducesResponseType(typeof(IReadOnlyCollection<ResultResponse>), StatusCodes.Status200OK)]
