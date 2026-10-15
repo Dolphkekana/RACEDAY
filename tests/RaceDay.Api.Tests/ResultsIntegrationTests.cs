@@ -62,6 +62,42 @@ public sealed class ResultsIntegrationTests
     }
 
     [Fact]
+    public async Task OwningOrganiserCanListEventResults_OthersAreRejected()
+    {
+        var enrolmentId = await CreateEnrolmentAsync();
+        using var organiser = await LoginAsync("organiser@example.com");
+        var create = await organiser.PostAsJsonAsync(
+            $"/api/enrolments/{enrolmentId}/result",
+            new { finishTime = "00:45:10", finishingPosition = 3 });
+        Assert.Equal(HttpStatusCode.Created, create.StatusCode);
+
+        int eventId;
+        using (var scope = factory.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<RaceDayDbContext>();
+            eventId = (await dbContext.Enrolments.SingleAsync(e => e.EnrolmentId == enrolmentId)).EventId;
+        }
+
+        var list = await organiser.GetAsync($"/api/events/{eventId}/results");
+        Assert.Equal(HttpStatusCode.OK, list.StatusCode);
+        Assert.Contains("\"finishingPosition\":3", await list.Content.ReadAsStringAsync());
+
+        using var otherOrganiser = await LoginAsync("second.organiser@example.com");
+        Assert.Equal(
+            HttpStatusCode.Forbidden,
+            (await otherOrganiser.GetAsync($"/api/events/{eventId}/results")).StatusCode);
+
+        using var participant = await LoginAsync("participant@example.com");
+        Assert.Equal(
+            HttpStatusCode.Forbidden,
+            (await participant.GetAsync($"/api/events/{eventId}/results")).StatusCode);
+
+        Assert.Equal(
+            HttpStatusCode.NotFound,
+            (await organiser.GetAsync("/api/events/99999/results")).StatusCode);
+    }
+
+    [Fact]
     public async Task AnonymousAndParticipantCannotManageResults()
     {
         var enrolmentId = await CreateEnrolmentAsync();

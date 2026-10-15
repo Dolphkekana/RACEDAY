@@ -144,6 +144,42 @@ public sealed class ResultsController(RaceDayDbContext dbContext) : ControllerBa
         return Ok(results);
     }
 
+    [SwaggerOperation(Summary = "List results for an event", Description = "Organiser only, for an event they own. Ordered by finishing position.")]
+    [HttpGet("api/events/{eventId:int}/results")]
+    [Authorize(Roles = "Organiser")]
+    [ProducesResponseType(typeof(IReadOnlyCollection<ResultResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IReadOnlyCollection<ResultResponse>>> GetForEvent(
+        int eventId,
+        CancellationToken cancellationToken)
+    {
+        var raceEvent = await dbContext.Events
+            .AsNoTracking()
+            .SingleOrDefaultAsync(candidate => candidate.EventId == eventId, cancellationToken);
+        if (raceEvent is null)
+        {
+            return NotFound(new ProblemDetails { Title = "Event not found." });
+        }
+
+        // Organisers may only see results for events they created
+        if (raceEvent.OrganiserId != GetUserId())
+        {
+            return Forbid();
+        }
+
+        var results = await dbContext.Results
+            .AsNoTracking()
+            .Where(result => result.Enrolment!.EventId == eventId)
+            .OrderBy(result => result.FinishingPosition)
+            .ThenBy(result => result.ResultId)
+            .Select(ToResponseExpression())
+            .ToListAsync(cancellationToken);
+
+        return Ok(results);
+    }
+
     private int GetUserId() =>
         int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
