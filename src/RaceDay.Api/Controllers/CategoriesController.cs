@@ -5,13 +5,15 @@ using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Contracts;
 using RaceDay.Api.Data;
 using RaceDay.Api.Models;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace RaceDay.Api.Controllers;
 
 [ApiController]
+[Produces("application/json")]
 public sealed class CategoriesController(RaceDayDbContext dbContext) : ControllerBase
 {
-    /// <summary>Lists categories belonging to an event.</summary>
+    [SwaggerOperation(Summary = "List categories for an event", Description = "Public. Lists the age or distance categories of an event.")]
     [HttpGet("api/events/{eventId:int}/categories")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(IReadOnlyCollection<CategoryResponse>), StatusCodes.Status200OK)]
@@ -35,6 +37,7 @@ public sealed class CategoriesController(RaceDayDbContext dbContext) : Controlle
         return Ok(categories);
     }
 
+    [SwaggerOperation(Summary = "Get one category", Description = "Public. Returns one category by id.")]
     [HttpGet("api/categories/{categoryId:int}")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(CategoryResponse), StatusCodes.Status200OK)]
@@ -52,7 +55,8 @@ public sealed class CategoriesController(RaceDayDbContext dbContext) : Controlle
         return category is null ? NotFound() : Ok(category);
     }
 
-    /// <summary>Creates a category for an event owned by the authenticated Organiser.</summary>
+    [SwaggerOperation(Summary = "Create a category", Description = "Organiser only, for an event they own. Send JSON with name, optional minimumAge, maximumAge and distanceKm.")]
+    [Consumes("application/json")]
     [HttpPost("api/events/{eventId:int}/categories")]
     [Authorize(Roles = "Organiser")]
     [ProducesResponseType(typeof(CategoryResponse), StatusCodes.Status201Created)]
@@ -106,6 +110,8 @@ public sealed class CategoriesController(RaceDayDbContext dbContext) : Controlle
             await GetResponseAsync(category.CategoryId, cancellationToken));
     }
 
+    [SwaggerOperation(Summary = "Update a category", Description = "Organiser only, for an event they own. Uses the same JSON body as create.")]
+    [Consumes("application/json")]
     [HttpPut("api/categories/{categoryId:int}")]
     [Authorize(Roles = "Organiser")]
     [ProducesResponseType(typeof(CategoryResponse), StatusCodes.Status200OK)]
@@ -156,7 +162,7 @@ public sealed class CategoriesController(RaceDayDbContext dbContext) : Controlle
         return Ok(await GetResponseAsync(categoryId, cancellationToken));
     }
 
-    /// <summary>Deletes a category when no enrolment uses it.</summary>
+    [SwaggerOperation(Summary = "Delete a category", Description = "Organiser only, for an event they own. Returns 409 if participants are enrolled in the category.")]
     [HttpDelete("api/categories/{categoryId:int}")]
     [Authorize(Roles = "Organiser")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
