@@ -74,6 +74,19 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+// Apply any pending migrations in Development so the LocalDB database is created automatically
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<RaceDayDbContext>();
+
+    // The test projects use the in-memory provider, which does not support migrations
+    if (dbContext.Database.IsRelational())
+    {
+        dbContext.Database.Migrate();
+    }
+}
+
 app.UseExceptionHandler();
 
 // Enable Swagger UI in development so the API can be explored without exposing it by default in production.
