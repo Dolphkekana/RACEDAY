@@ -70,6 +70,26 @@ public sealed class AuthenticationIntegrationTests
         Assert.Equal("Organiser", profile.Role);
     }
 
+    [Theory]
+    [InlineData("weak.password@example.com", "password")]
+    [InlineData("not-an-email", "SecurePass1")]
+    public async Task Registration_RejectsWeakPasswordOrInvalidEmail(string email, string password)
+    {
+        using var client = CreateHttpsClient();
+        var response = await client.PostAsJsonAsync("/api/auth/register", new
+        {
+            firstName = "Bad",
+            lastName = "Input",
+            email,
+            password,
+            phoneNumber = "0712345678",
+            dateOfBirth = "1995-03-10",
+            role = "Participant"
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
     [Fact]
     public async Task Registration_RejectsUnknownRole()
     {
