@@ -43,6 +43,28 @@ public sealed class EventsCategoriesIntegrationTests
     }
 
     [Fact]
+    public async Task OrganiserCanListOwnEvents_ParticipantIsForbidden()
+    {
+        using var organiserClient = factory.CreateClient();
+        var eventId = await CreateEventAsync(organiserClient);
+
+        var mine = await organiserClient.GetAsync("/api/events/mine");
+        Assert.Equal(HttpStatusCode.OK, mine.StatusCode);
+        Assert.Contains($"\"eventId\":{eventId}", await mine.Content.ReadAsStringAsync());
+
+        using var participantClient = factory.CreateClient();
+        await LoginAsync(participantClient, "participant@example.com");
+        Assert.Equal(
+            HttpStatusCode.Forbidden,
+            (await participantClient.GetAsync("/api/events/mine")).StatusCode);
+
+        using var anonymousClient = factory.CreateClient();
+        Assert.Equal(
+            HttpStatusCode.Unauthorized,
+            (await anonymousClient.GetAsync("/api/events/mine")).StatusCode);
+    }
+
+    [Fact]
     public async Task MissingEventAndCategoryReturnNotFound()
     {
         using var client = factory.CreateClient();
