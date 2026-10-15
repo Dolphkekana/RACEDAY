@@ -61,8 +61,6 @@ A Participant can:
 
 <img src="docs/RaceDayERD.png" alt="RaceDay ERD" width="600" />
 
-# RaceDay
-
 
 
 ## Core Tables
@@ -172,7 +170,7 @@ GET  /api/results/my
 The complete API specification is available in:
 
 ```
-/docs/RaceDay-API-Endpoint-Plan.md
+/docs/RaceDay_API_Endpoint_Plan.md
 ```
 
 The endpoint plan contains the HTTP methods, routes, descriptions, role requirements, request bodies and expected response codes.
@@ -213,24 +211,27 @@ The API must:
 
 ## Project Structure
 
-The intended repository structure is:
+The repository structure is:
 
 ```
-RaceDay/
+RACEDAY/
 │
 ├── docs/
-│   ├── RaceDay-ERD.png
-│   ├── RaceDay-API-Endpoint-Plan.md
-│   └── RaceDay-Database.sql
+│   ├── RaceDayERD.png
+│   ├── RaceDay_API_Endpoint_Plan.md
+│   ├── RaceDay-Database.sql
+│   └── ci-run.png
 │
 ├── src/
 │   └── RaceDay.Api/
+│       ├── Auth/
+│       ├── Contracts/
 │       ├── Controllers/
 │       ├── Data/
+│       │   └── Migrations/
+│       ├── Documentation/
 │       ├── Models/
-│       ├── DTOs/
 │       ├── Services/
-│       ├── Middleware/
 │       └── Program.cs
 │
 ├── tests/
@@ -238,12 +239,12 @@ RaceDay/
 │
 ├── .github/
 │   └── workflows/
+│       ├── part1-validation.yml
+│       └── part2-ci.yml
 │
 ├── README.md
 └── RaceDay.sln
 ```
-
-The final implementation structure may be adjusted during Part 2 if required by the ASP.NET Core project setup.
 
 ## Getting Started
 
@@ -449,8 +450,8 @@ Part 1 documentation is stored inside the `/docs` directory.
 
 | File                         | Description                                                                             |
 | ---------------------------- | --------------------------------------------------------------------------------------- |
-| RaceDay-ERD.png              | Entity Relationship Diagram showing the database entities and relationships.            |
-| RaceDay-API-Endpoint-Plan.md | Complete REST API endpoint specification.                                               |
+| RaceDayERD.png              | Entity Relationship Diagram showing the database entities and relationships.            |
+| RaceDay_API_Endpoint_Plan.md | Complete REST API endpoint specification.                                               |
 | RaceDay-Database.sql         | SQL Server database creation, constraints, indexes, seed data and verification queries. |
 | ci-run.png                   | Screenshot of a successful GitHub Actions CI build.                                     |
 
