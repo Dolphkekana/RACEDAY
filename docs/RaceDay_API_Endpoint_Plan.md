@@ -55,14 +55,21 @@ Authentication is session-based.
 
 | HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
 |---|---|---|---|---|---|
-| POST | `/api/auth/register` | Creates a new RaceDay account and assigns the selected Organiser or Participant role. | None | `{ "firstName": "Dolph", "lastName": "Kekana", "email": "Dolph@example.com", "password": "SecurePassword123!", "phoneNumber": "0712345678", "dateOfBirth": "2002-05-14", "role": "Participant" }` | `201 Created` with the created user's public profile. `400 Bad Request` for invalid data. `409 Conflict` if the email is already registered. |
+| POST | `/api/auth/register` | Creates a new account with the selected role (`Organiser` or `Participant`). | None | `{ "firstName": "Dolph", "lastName": "Kekana", "email": "Dolph@example.com", "password": "SecurePassword123!", "phoneNumber": "0712345678", "dateOfBirth": "2002-05-14", "role": "Participant" }` | `201 Created` with the created user's public profile. `400 Bad Request` for invalid data or an unsupported role. `409 Conflict` if the email is already registered. |
 
 ### Registration Rules
 
 - Email addresses must be unique.
 - The password must be validated and securely hashed before storage.
 - The password must never be returned in the response.
-- The role must be either `Organiser` or `Participant`.
+- The user selects a role of `Organiser` or `Participant` when registering. Any other role returns `400 Bad Request`.
+- An authenticated Organiser can also create additional Organiser accounts through `POST /api/auth/provision-organiser`.
+
+## 3.4 Provision Organiser
+
+| HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
+|---|---|---|---|---|---|
+| POST | `/api/auth/provision-organiser` | Creates an Organiser account from an existing authenticated Organiser account. | Organiser | `{ "firstName": "Kabelo", "lastName": "Dlamini", "email": "kabelo@example.com", "password": "SecurePassword123!", "phoneNumber": "0723456789", "dateOfBirth": "1987-11-02" }` | `201 Created` with the public profile. `401 Unauthorized` if not logged in. `403 Forbidden` for Participants. `409 Conflict` if the email is already registered. |
 
 ---
 
@@ -148,6 +155,12 @@ Authentication is session-based.
 | HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
 |---|---|---|---|---|---|
 | DELETE | `/api/events/{eventId}` | Deletes an event owned by the authenticated Organiser when it is permitted by the system's enrolment rules. | Organiser | None | `204 No Content` when deleted. `401 Unauthorized` if not logged in. `403 Forbidden` if the event belongs to another Organiser. `404 Not Found` if the event does not exist. `409 Conflict` if the event cannot be deleted because existing enrolments prevent deletion. |
+
+## 5.6 Get My Events
+
+| HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
+|---|---|---|---|---|---|
+| GET | `/api/events/mine` | Returns the events created by the authenticated Organiser. | Organiser | None | `200 OK` with the Organiser's events. `401 Unauthorized` if not logged in. `403 Forbidden` if the user is not an Organiser. |
 
 ---
 
@@ -283,6 +296,12 @@ Supported statuses:
 |---|---|---|---|---|---|
 | GET | `/api/results/my` | Returns the authenticated Participant's personal race history, including event, date, category, finish time, and finishing position. | Participant | None | `200 OK` with the Participant's results. `401 Unauthorized` if not logged in. `403 Forbidden` if the user is not a Participant. |
 
+## 9.4 Get Event Results
+
+| HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
+|---|---|---|---|---|---|
+| GET | `/api/events/{eventId}/results` | Returns all results for an event owned by the authenticated Organiser, ordered by finishing position. | Organiser | None | `200 OK` with the event results. `401 Unauthorized` if not logged in. `403 Forbidden` if the event belongs to another Organiser or the user is not an Organiser. `404 Not Found` if the event does not exist. |
+
 ---
 
 # 10. Endpoint Summary
@@ -291,15 +310,16 @@ The planned API contains the following endpoint groups:
 
 | Resource | Planned Operations |
 |---|---|
-| Authentication | Register, Login, Logout |
+| Authentication | Register, Provision Organiser, Login, Logout |
 | User Profile | Get Profile, Update Profile |
-| Events | List, Get, Create, Update, Delete |
+| Events | List, Get Mine, Get, Create, Update, Delete |
 | Event Types | List, Get |
 | Categories | List by Event, Get, Create, Update, Delete |
 | Enrolments | Create, Get Mine, Get by ID, Get Event Enrolments, Update Status |
-| Results | Create, Update, Get Mine |
+| Results | Create, Update, Get Mine, Get Event Results |
+| Health | Get Health |
 
-**Total planned endpoints: 26**
+**Total endpoints: 29**
 
 ---
 
@@ -317,6 +337,7 @@ The planned API contains the following endpoint groups:
 | View Own Profile | No | Yes | Yes | Yes |
 | Update Own Profile | No | Yes | Yes | Yes |
 | Create Event | No | No | Yes | No |
+| View Own Events | No | No | Yes | No |
 | Update Own Event | No | No | Yes | No |
 | Delete Own Event | No | No | Yes | No |
 | Create Category | No | No | Yes | No |
@@ -328,6 +349,7 @@ The planned API contains the following endpoint groups:
 | Update Enrolment Status | No | No | Yes | No |
 | Record Result | No | No | Yes | No |
 | Update Result | No | No | Yes | No |
+| View Event Results | No | No | Yes | No |
 | View Own Results | No | No | No | Yes |
 
 ---
@@ -375,5 +397,4 @@ When implementation begins:
 10. Any necessary deviation from this plan must be documented and justified.
 
 The goal is for the Part 2 implementation to closely match this approved Part 1 API specification.
-
 

@@ -61,8 +61,6 @@ A Participant can:
 
 <img src="docs/RaceDayERD.png" alt="RaceDay ERD" width="600" />
 
-# RaceDay
-
 
 
 ## Core Tables
@@ -172,7 +170,7 @@ GET  /api/results/my
 The complete API specification is available in:
 
 ```
-/docs/RaceDay-API-Endpoint-Plan.md
+/docs/RaceDay_API_Endpoint_Plan.md
 ```
 
 The endpoint plan contains the HTTP methods, routes, descriptions, role requirements, request bodies and expected response codes.
@@ -213,24 +211,27 @@ The API must:
 
 ## Project Structure
 
-The intended repository structure is:
+The repository structure is:
 
 ```
-RaceDay/
+RACEDAY/
 │
 ├── docs/
-│   ├── RaceDay-ERD.png
-│   ├── RaceDay-API-Endpoint-Plan.md
-│   └── RaceDay-Database.sql
+│   ├── RaceDayERD.png
+│   ├── RaceDay_API_Endpoint_Plan.md
+│   ├── RaceDay-Database.sql
+│   └── ci-run.png
 │
 ├── src/
 │   └── RaceDay.Api/
+│       ├── Auth/
+│       ├── Contracts/
 │       ├── Controllers/
 │       ├── Data/
+│       │   └── Migrations/
+│       ├── Documentation/
 │       ├── Models/
-│       ├── DTOs/
 │       ├── Services/
-│       ├── Middleware/
 │       └── Program.cs
 │
 ├── tests/
@@ -238,12 +239,12 @@ RaceDay/
 │
 ├── .github/
 │   └── workflows/
+│       ├── part1-validation.yml
+│       └── part2-ci.yml
 │
 ├── README.md
 └── RaceDay.sln
 ```
-
-The final implementation structure may be adjusted during Part 2 if required by the ASP.NET Core project setup.
 
 ## Getting Started
 
@@ -449,8 +450,8 @@ Part 1 documentation is stored inside the `/docs` directory.
 
 | File                         | Description                                                                             |
 | ---------------------------- | --------------------------------------------------------------------------------------- |
-| RaceDay-ERD.png              | Entity Relationship Diagram showing the database entities and relationships.            |
-| RaceDay-API-Endpoint-Plan.md | Complete REST API endpoint specification.                                               |
+| RaceDayERD.png              | Entity Relationship Diagram showing the database entities and relationships.            |
+| RaceDay_API_Endpoint_Plan.md | Complete REST API endpoint specification.                                               |
 | RaceDay-Database.sql         | SQL Server database creation, constraints, indexes, seed data and verification queries. |
 | ci-run.png                   | Screenshot of a successful GitHub Actions CI build.                                     |
 
@@ -483,6 +484,134 @@ These accounts are intended for local development and testing only.
 
 Production credentials must be secure and must never be committed to source control.
 
+## Part 2: RESTful Web API
+
+Part 2 is an ASP.NET Core 8 Web API that uses Entity Framework Core Code-First with SQL Server. The schema matches the Part 1 ERD and SQL script.
+
+[![RaceDay Part 2 CI](https://github.com/Dolphkekana/RACEDAY/actions/workflows/part2-ci.yml/badge.svg?branch=part-2-api)](https://github.com/Dolphkekana/RACEDAY/actions/workflows/part2-ci.yml)
+
+### Where to find the Part 2 files
+
+| Location | What it holds |
+| --- | --- |
+| `RaceDay.sln` | Solution file that contains the API project and the test project. |
+| `src/RaceDay.Api/Program.cs` | Startup: EF Core, session, authentication, Swagger and the automatic migration step. |
+| `src/RaceDay.Api/Auth/` | `SessionAuthenticationHandler` reads the user id and role from the server-side session. `UserSession` holds the session key names. |
+| `src/RaceDay.Api/Contracts/` | Request and response records (DTOs) with validation attributes. Password hashes are never returned. |
+| `src/RaceDay.Api/Controllers/` | One controller per resource: Auth, Users, Events, EventTypes, Categories, Enrolments, Results and Health. |
+| `src/RaceDay.Api/Data/RaceDayDbContext.cs` | EF Core DbContext with keys, lengths, unique indexes, check constraints and the seeded event types. |
+| `src/RaceDay.Api/Data/Migrations/` | The `InitialCreate` EF Core migration that builds the database. |
+| `src/RaceDay.Api/Documentation/` | Swagger filter that marks protected endpoints with the session cookie. |
+| `src/RaceDay.Api/Models/` | Entity classes: User, EventType, Event, Category, Enrolment and Result. |
+| `src/RaceDay.Api/Services/` | `AuthenticationService` for registration, login, password hashing and profile updates. |
+| `src/RaceDay.Api/RaceDay.Api.http` | Sample requests for testing in Visual Studio or VS Code. |
+| `tests/RaceDay.Api.Tests/` | xUnit tests that run the API in memory with `WebApplicationFactory` and the EF Core InMemory provider. |
+| `.github/workflows/part2-ci.yml` | GitHub Actions workflow that restores, builds and tests the solution on every push. |
+| `docs/` | ERD, SQL script, endpoint plan and CI screenshot. |
+
+### Setting up the database
+
+You can create the database in one of two ways. Use one of them, not both, on the same database.
+
+**Option 1: EF Core migrations (recommended)**
+
+The connection string is in `src/RaceDay.Api/appsettings.json` and `appsettings.Development.json`. It points at SQL Server LocalDB and a database called `RaceDayApiDB`:
+
+```
+Server=(localdb)\mssqllocaldb;Database=RaceDayApiDB;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True
+```
+
+When the API runs in Development it applies any pending migrations by itself. You can also run them by hand:
+
+```bash
+dotnet tool install --global dotnet-ef --version 8.0.10
+dotnet ef database update --project src/RaceDay.Api
+```
+
+The migration seeds the three event types: Run (1), Walk (2) and Cycle (3).
+
+**Option 2: Part 1 SQL script**
+
+Run `docs/RaceDay-Database.sql` in SSMS. It creates a database called `RaceDay` with sample data. Then change `Database=RaceDayApiDB` to `Database=RaceDay` in both appsettings files. Do not run the migrations against this database because the tables already exist.
+
+### Running the API and Swagger
+
+```bash
+dotnet restore RaceDay.sln
+dotnet build RaceDay.sln
+dotnet run --project src/RaceDay.Api
+```
+
+Open the Swagger UI at `https://localhost:<port>/swagger` (the port is shown in the console and in `Properties/launchSettings.json`). Every endpoint in Swagger shows a summary, a description of the input format, and the status codes it can return.
+
+To try the protected endpoints in Swagger, call `POST /api/auth/login` first. The browser keeps the `RaceDay.Session` cookie, so the next requests are sent as that user.
+
+### Authentication and roles
+
+- `POST /api/auth/register` creates an account. The user selects the role `Organiser` or `Participant`. Any other role returns `400 Bad Request`.
+- Passwords must be at least 8 characters with an upper case letter, a lower case letter and a digit. They are hashed with the ASP.NET Core `PasswordHasher` before they are saved.
+- `POST /api/auth/login` checks the password and stores the user id and role in the server-side session. The client only gets an HttpOnly `RaceDay.Session` cookie. The session expires after 30 minutes without activity.
+- `POST /api/auth/logout` clears the session.
+- Endpoints use `[Authorize]` or `[Authorize(Roles = "...")]`. No session returns `401 Unauthorized` and the wrong role returns `403 Forbidden`.
+- Organisers can only change events, categories, enrolments and results for events they created. Participants only see their own enrolments and results. The participant id always comes from the session, never from the request body.
+
+### Endpoint summary
+
+| Method | Route | Role |
+| --- | --- | --- |
+| POST | `/api/auth/register` | Public |
+| POST | `/api/auth/login` | Public |
+| POST | `/api/auth/logout` | Any logged in user |
+| POST | `/api/auth/provision-organiser` | Organiser |
+| GET | `/api/users/me` | Any logged in user |
+| PUT | `/api/users/me` | Any logged in user |
+| GET | `/api/events` | Public |
+| GET | `/api/events/{eventId}` | Public |
+| GET | `/api/events/mine` | Organiser |
+| POST | `/api/events` | Organiser |
+| PUT | `/api/events/{eventId}` | Organiser (owner) |
+| DELETE | `/api/events/{eventId}` | Organiser (owner) |
+| GET | `/api/event-types` | Public |
+| GET | `/api/event-types/{eventTypeId}` | Public |
+| GET | `/api/events/{eventId}/categories` | Public |
+| GET | `/api/categories/{categoryId}` | Public |
+| POST | `/api/events/{eventId}/categories` | Organiser (owner) |
+| PUT | `/api/categories/{categoryId}` | Organiser (owner) |
+| DELETE | `/api/categories/{categoryId}` | Organiser (owner) |
+| POST | `/api/events/{eventId}/enrolments` | Participant |
+| GET | `/api/enrolments/my` | Participant |
+| GET | `/api/enrolments/{enrolmentId}` | Participant (own) or Organiser (owner) |
+| GET | `/api/events/{eventId}/enrolments` | Organiser (owner) |
+| PUT | `/api/enrolments/{enrolmentId}/status` | Organiser (owner) |
+| POST | `/api/enrolments/{enrolmentId}/result` | Organiser (owner) |
+| PUT | `/api/results/{resultId}` | Organiser (owner) |
+| GET | `/api/results/my` | Participant |
+| GET | `/api/events/{eventId}/results` | Organiser (owner) |
+| GET | `/api/health` | Public |
+
+The full plan with request bodies and response codes is in `docs/RaceDay_API_Endpoint_Plan.md`.
+
+### Running the tests
+
+```bash
+dotnet test RaceDay.sln
+```
+
+The tests do not need SQL Server because they use the EF Core InMemory provider. They cover:
+
+- Registration with both roles, invalid roles, weak passwords, invalid emails and duplicate emails.
+- Login, logout, wrong passwords and profile view and update.
+- Event and category create, update and delete, including date and distance validation.
+- Role rejection: anonymous users get 401 and the wrong role gets 403.
+- Ownership: one Organiser cannot manage another Organiser's event, enrolments or results.
+- Enrolments: entering by category, duplicate enrolments, missing references and status updates.
+- Results: capturing, updating, viewing own results, viewing event results and invalid values.
+- Swagger: every endpoint has a summary and documented responses.
+
+### Continuous integration
+
+`.github/workflows/part2-ci.yml` runs on every push to any branch and on pull requests. It sets up .NET 8, then restores, builds (Release) and runs all the tests in `RaceDay.sln`. Runs can be viewed on the [Actions tab](https://github.com/Dolphkekana/RACEDAY/actions/workflows/part2-ci.yml).
+
 ## Project Status
 
 
@@ -504,17 +633,17 @@ Production credentials must be secure and must never be committed to source cont
 
 ### Part 2
 
-- [ ] ASP.NET Core Web API implementation.
-- [ ] Entity Framework Core integration.
-- [ ] Session-based authentication.
-- [ ] Role-based authorisation.
-- [ ] Event management.
-- [ ] Category management.
-- [ ] Participant enrolments.
-- [ ] Result management.
-- [ ] Swagger documentation.
-- [ ] Automated tests.
-- [ ] CI/CD pipeline.
+- [x] ASP.NET Core Web API implementation.
+- [x] Entity Framework Core integration.
+- [x] Session-based authentication.
+- [x] Role-based authorisation.
+- [x] Event management.
+- [x] Category management.
+- [x] Participant enrolments.
+- [x] Result management.
+- [x] Swagger documentation.
+- [x] Automated tests.
+- [x] CI/CD pipeline.
 
 
 
