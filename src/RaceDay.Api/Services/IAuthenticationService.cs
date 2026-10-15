@@ -4,7 +4,7 @@ namespace RaceDay.Api.Services;
 
 public interface IAuthenticationService
 {
-    Task<UserResponse> RegisterParticipantAsync(RegisterRequest request, CancellationToken cancellationToken);
+    Task<UserResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken);
 
     Task<UserResponse> ProvisionOrganiserAsync(
         ProvisionOrganiserRequest request,

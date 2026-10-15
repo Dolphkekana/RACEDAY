@@ -21,14 +21,9 @@ public sealed class AuthController(
         RegisterRequest request,
         CancellationToken cancellationToken)
     {
-        if (!string.Equals(request.Role, "Participant", StringComparison.Ordinal))
-        {
-            return Forbid();
-        }
-
         try
         {
-            var response = await authenticationService.RegisterParticipantAsync(request, cancellationToken);
+            var response = await authenticationService.RegisterAsync(request, cancellationToken);
             return Created("/api/users/me", response);
         }
         catch (DuplicateEmailException)

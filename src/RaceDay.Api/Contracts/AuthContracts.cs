@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace RaceDay.Api.Contracts;
 
 /// <summary>
-/// Payload for creating a public Participant account.
+/// Payload for creating a new Organiser or Participant account.
 /// </summary>
 public sealed record RegisterRequest
 {
@@ -26,7 +26,8 @@ public sealed record RegisterRequest
     [Required]
     public DateTime DateOfBirth { get; init; }
 
-    [Required, RegularExpression("^Participant$")]
+    // The user selects either Organiser or Participant when registering
+    [Required, RegularExpression("^(Organiser|Participant)$", ErrorMessage = "Role must be Organiser or Participant.")]
     public required string Role { get; init; }
 }
 

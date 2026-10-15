@@ -50,18 +50,39 @@ public sealed class AuthenticationIntegrationTests
     }
 
     [Fact]
-    public async Task PublicRegistration_CannotGrantOrganiserRole()
+    public async Task Registration_AllowsOrganiserRoleSelection()
     {
         using var client = CreateHttpsClient();
         var response = await client.PostAsJsonAsync("/api/auth/register", new
         {
-            firstName = "Untrusted",
+            firstName = "New",
             lastName = "Organiser",
-            email = "untrusted.organiser@example.com",
+            email = "new.organiser@example.com",
             password = "SecurePass1",
             phoneNumber = "0712345678",
             dateOfBirth = "1990-05-14",
             role = "Organiser"
+        });
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var profile = await response.Content.ReadFromJsonAsync<UserResponse>();
+        Assert.NotNull(profile);
+        Assert.Equal("Organiser", profile.Role);
+    }
+
+    [Fact]
+    public async Task Registration_RejectsUnknownRole()
+    {
+        using var client = CreateHttpsClient();
+        var response = await client.PostAsJsonAsync("/api/auth/register", new
+        {
+            firstName = "Bad",
+            lastName = "Role",
+            email = "bad.role@example.com",
+            password = "SecurePass1",
+            phoneNumber = "0712345678",
+            dateOfBirth = "1990-05-14",
+            role = "Admin"
         });
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);

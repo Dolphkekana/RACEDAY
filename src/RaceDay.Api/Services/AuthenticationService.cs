@@ -10,7 +10,8 @@ public sealed class AuthenticationService(
     RaceDayDbContext dbContext,
     IPasswordHasher<User> passwordHasher) : IAuthenticationService
 {
-    public Task<UserResponse> RegisterParticipantAsync(
+    // Creates the account with the role the user selected on the registration form
+    public Task<UserResponse> RegisterAsync(
         RegisterRequest request,
         CancellationToken cancellationToken) =>
         CreateUserAsync(
@@ -20,7 +21,7 @@ public sealed class AuthenticationService(
             request.Password,
             request.PhoneNumber,
             request.DateOfBirth,
-            "Participant",
+            request.Role,
             cancellationToken);
 
     public Task<UserResponse> ProvisionOrganiserAsync(
