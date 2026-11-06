@@ -1,3 +1,4 @@
+# API talks to SQL Server and Azurite by service name. The browser uses the published host ports.
 services:
   sql:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -33,6 +34,7 @@ services:
       Database__ApplyMigrations: "true"
       AzureStorage__ConnectionString: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;
       AzureStorage__ContainerName: raceday-images
+      # BlobEndpoint above is the in-cluster host. This URL is the one saved for the browser.
       AzureStorage__PublicBlobBaseUrl: http://localhost:10000/devstoreaccount1
     ports:
       - "5258:8080"

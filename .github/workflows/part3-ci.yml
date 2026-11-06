@@ -1,3 +1,4 @@
+# Builds the API and the MVC site separately, then runs the API test project.
 name: RaceDay Part 3 CI
 
 on:

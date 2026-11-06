@@ -27,6 +27,7 @@ jobs:
       - name: Build solution
         run: dotnet build RaceDay.sln --no-restore --configuration Release
 
+      # Part 3 added the MVC project. This step builds it even if a later change splits it out of the solution build.
       - name: Build the MVC web application
         run: dotnet build src/RaceDay.Web/RaceDay.Web.csproj --configuration Release --no-restore
 
