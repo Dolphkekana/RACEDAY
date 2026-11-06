@@ -124,7 +124,7 @@ public sealed class ResultsController(RaceDayDbContext dbContext) : ControllerBa
         return Ok(await GetResponseAsync(resultId, cancellationToken));
     }
 
-    [SwaggerOperation(Summary = "List my results", Description = "Participant only. Lists the results of the logged in Participant.")]
+    [SwaggerOperation(Summary = "List my results", Description = "Participant only. Lists the results of the logged in Participant, including finish time, finishing position, and how many people finished the event.")]
     [HttpGet("api/results/my")]
     [Authorize(Roles = "Participant")]
     [ProducesResponseType(typeof(IReadOnlyCollection<ResultResponse>), StatusCodes.Status200OK)]
@@ -226,5 +226,6 @@ public sealed class ResultsController(RaceDayDbContext dbContext) : ControllerBa
             result.Enrolment.Category!.Name,
             result.FinishTime,
             result.FinishingPosition,
-            result.RecordedAt);
+            result.RecordedAt,
+            result.Enrolment.Event.Enrolments.Count(enrolment => enrolment.Result != null));
 }

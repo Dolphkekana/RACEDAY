@@ -23,4 +23,5 @@ public sealed record ResultResponse(
     string CategoryName,
     TimeSpan FinishTime,
     int FinishingPosition,
-    DateTime RecordedAt);
+    DateTime RecordedAt,
+    int FinisherCount);
