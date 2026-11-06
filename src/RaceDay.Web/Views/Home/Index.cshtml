@@ -3,13 +3,29 @@
     ViewData["Title"] = "Upcoming events";
 }
 
-<section class="hero">
-    <p class="eyebrow">Upcoming events</p>
-    <h1>Find your next start line.</h1>
-    <p class="lead">Browse road runs, walks, and rides. Filter by name, type, place, or distance.</p>
+<section class="race-hero">
+    <div>
+        <p class="eyebrow">Upcoming events</p>
+        <h1>Find your next start line.</h1>
+        <p class="lead">Browse road runs, walks, and rides across South Africa. Filter by name, type, place, or distance.</p>
+        <div class="hero-actions">
+            <a class="btn btn-amber" href="#event-filters">Filter events</a>
+            @if (Context.Session.GetInt32(AppSession.UserId) is null)
+            {
+                <a class="btn btn-outline-ink" asp-controller="Account" asp-action="Register">Create an account</a>
+            }
+        </div>
+    </div>
+    <div class="track-card" aria-hidden="true">
+        <strong>Race weekend</strong>
+        <span>Runs, walks, and rides on one start list.</span>
+        <div class="lane"><span></span></div>
+        <div class="lane"><span style="width:46%"></span></div>
+        <div class="lane"><span style="width:82%"></span></div>
+    </div>
 </section>
 
-<form method="get" class="panel">
+<form id="event-filters" method="get" class="filter-panel">
     <div class="row g-3 align-items-end">
         <div class="col-md-4">
             <label asp-for="Name" class="form-label"></label>
@@ -46,7 +62,8 @@
 
 @if (Model.Events.Count == 0)
 {
-    <section class="panel">
+    <section class="panel empty-state">
+        <i class="bi bi-calendar-x" aria-hidden="true"></i>
         <h2>No upcoming events match those filters.</h2>
         <p class="meta">Try a wider search, or check back when organisers publish the next race.</p>
     </section>
@@ -58,19 +75,28 @@ else
         {
             var banner = MediaUrls.ForBrowser(Context, raceEvent.BannerImageUrl);
             <article class="event-card">
-                @if (banner is null)
-                {
-                    <div class="banner-fallback">@raceEvent.EventType</div>
-                }
-                else
-                {
-                    <img src="@banner" alt="Banner for @raceEvent.Name" />
-                }
+                <div class="event-media">
+                    @if (banner is null)
+                    {
+                        <div class="banner-fallback">@raceEvent.EventType</div>
+                    }
+                    else
+                    {
+                        <img src="@banner" alt="Banner for @raceEvent.Name" />
+                    }
+                    <div class="date-badge">
+                        <span class="date-day">@raceEvent.EventDate.ToString("dd")</span>
+                        <span class="date-month">@raceEvent.EventDate.ToString("MMM")</span>
+                    </div>
+                </div>
                 <div class="card-body">
-                    <p class="eyebrow">@raceEvent.EventType · @raceEvent.DistanceKm.ToString("0.##") km</p>
-                    <h2>@raceEvent.Name</h2>
-                    <p class="meta">@raceEvent.EventDate.ToString("dddd, d MMMM yyyy")<br />@raceEvent.Location</p>
-                    <a class="btn btn-primary" asp-controller="Events" asp-action="Details" asp-route-id="@raceEvent.EventId">View event</a>
+                    <div class="chip-row">
+                        <span class="chip"><i class="bi bi-signpost-2" aria-hidden="true"></i> @raceEvent.EventType</span>
+                        <span class="chip chip-gold">@raceEvent.DistanceKm.ToString("0.##") km</span>
+                    </div>
+                    <h2><a asp-controller="Events" asp-action="Details" asp-route-id="@raceEvent.EventId">@raceEvent.Name</a></h2>
+                    <p class="location-line meta"><i class="bi bi-geo-alt" aria-hidden="true"></i> @raceEvent.Location</p>
+                    <a class="btn btn-primary mt-2" asp-controller="Events" asp-action="Details" asp-route-id="@raceEvent.EventId">View event</a>
                 </div>
             </article>
         }

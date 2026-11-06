@@ -244,6 +244,10 @@ button:focus-visible,
     position: relative;
 }
 
+.race-hero .eyebrow {
+    color: #f6d56a;
+}
+
 .race-hero h1 {
     font-size: clamp(2.2rem, 4vw, 3.4rem);
     margin: 0.2rem 0 0.6rem;
