@@ -212,10 +212,19 @@ h1, h2, h3 {
     background: transparent;
 }
 
-.profile-frame img {
+.profile-frame img,
+.profile-fallback {
     width: 120px;
     height: 120px;
     border-radius: 8px;
+}
+
+.profile-fallback {
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .nav-user {

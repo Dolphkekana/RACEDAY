@@ -1,0 +1,75 @@
+@model ProfileViewModel
+@{
+    ViewData["Title"] = "Profile";
+    var picture = MediaUrls.ForBrowser(Context, Model.ProfileImageUrl);
+}
+
+<section class="hero">
+    <p class="eyebrow">Participant</p>
+    <h1>Profile</h1>
+</section>
+
+<section class="panel">
+    <div class="profile-frame mb-3">
+        @if (picture is null)
+        {
+            <div class="banner-fallback profile-fallback">No picture yet</div>
+        }
+        else
+        {
+            <img src="@picture" alt="Profile picture for @Model.FirstName @Model.LastName" />
+        }
+    </div>
+    <form asp-action="Picture" method="post" enctype="multipart/form-data" class="row g-3 align-items-end">
+        <div class="col-md-6">
+            <label class="form-label" for="picture">Profile picture</label>
+            <input class="form-control" type="file" id="picture" name="picture" accept="image/jpeg,image/png,image/webp,image/gif" />
+            <p class="meta">JPG, PNG, WEBP, or GIF. 5 MB maximum. The file is sent to the API.</p>
+        </div>
+        <div class="col-md-6">
+            <button class="btn btn-amber" type="submit">Upload picture</button>
+        </div>
+    </form>
+</section>
+
+<section class="panel form-panel">
+    <h2>Personal details</h2>
+    <form asp-action="Index" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="FirstName" class="form-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="LastName" class="form-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Email</label>
+                <input class="form-control" value="@Model.Email" readonly />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Role</label>
+                <input class="form-control" value="@Model.Role" readonly />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="PhoneNumber" class="form-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="DateOfBirth" class="form-label"></label>
+                <input asp-for="DateOfBirth" class="form-control" />
+                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+            </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Save details</button>
+    </form>
+</section>
