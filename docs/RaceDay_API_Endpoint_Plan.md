@@ -398,3 +398,18 @@ When implementation begins:
 
 The goal is for the Part 2 implementation to closely match this approved Part 1 API specification.
 
+---
+
+# 14. Part 3 additions
+
+Part 3 keeps the routes above and adds image and dashboard operations. The MVC application calls these routes. It does not talk to Azure or the database itself.
+
+| HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
+| --- | --- | --- | --- | --- | --- |
+| POST | `/api/events/{eventId}/banner` | Stores an event banner and saves the URL on the event. | Organiser (owner) | multipart file field `file` | 200 OK with the event. 400 invalid image. 401, 403, 404. |
+| POST | `/api/users/me/picture` | Stores a profile picture and saves the URL on the user. | Any logged in user | multipart file field `file` | 200 OK with the profile. 400 invalid image. 401. |
+| GET | `/api/media/{container}/{fileName}` | Returns an image saved by the local storage fallback. | None | None | 200 image. 404. |
+| GET | `/api/organisers/dashboard` | Summarises the organiser's events and enrolment counts. | Organiser | None | 200 OK. 401, 403. |
+
+`GET /api/events` also accepts `name` and `upcoming` query parameters. Result responses include `finisherCount`. User responses include `profileImageUrl`.
+

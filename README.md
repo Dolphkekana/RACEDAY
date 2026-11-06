@@ -660,3 +660,91 @@ The repository aims to maintain:
 - Documented API behaviour.
 - Automated build and test checks.
 - Consistency between the Part 1 design and Part 2 implementation.
+
+## Part 3: MVC web application
+
+Part 3 adds an ASP.NET Core MVC site in `src/RaceDay.Web`. The site does not open a database connection and does not contain the enrolment or result rules. Every page calls the Part 2 API. The API stores event banners and profile pictures. When `AzureStorage:ConnectionString` is set, those files go to Azure Blob Storage (or Azurite, which speaks the same protocol). When it is empty, the API stores the files on disk and serves them from `/api/media`.
+
+### Roles in the web application
+
+- A visitor can browse upcoming events.
+- A participant can register, sign in, open an event, choose a category, see My Events, see My Results, and update a profile picture.
+- An organiser can register, sign in, open the dashboard, create and edit events, upload a banner, manage categories, view entries, and publish finish times and positions.
+- Sign out clears the MVC session and the API session. A page that belongs to the other role redirects the user. A page that requires a sign-in sends the visitor to the sign-in form.
+
+Enrolment status is colour coded: green for Confirmed, amber for Pending, and red for Cancelled.
+
+### Run the API and the website locally
+
+Use two terminals. The API still expects SQL Server LocalDB, as described in the Part 2 section.
+
+```bash
+dotnet run --project src/RaceDay.Api
+dotnet run --project src/RaceDay.Web
+```
+
+- Website: `http://localhost:5080`
+- Swagger: `http://localhost:5258/swagger`
+
+On a machine without LocalDB you can start the API with an in-memory database. That data disappears when the API stops, and it is only there so the site can be tried:
+
+```bash
+Database__Provider=InMemory dotnet run --project src/RaceDay.Api
+```
+
+If the database was created from `docs/RaceDay-Database.sql` instead of EF Core migrations, also run `docs/RaceDay-Part3-ProfileImage.sql` so profile pictures have a column to live in.
+
+### Azure Blob Storage
+
+Set this in `src/RaceDay.Api/appsettings.json`, or with environment variables, using your own storage account:
+
+```json
+"AzureStorage": {
+  "ConnectionString": "<your Azure Storage connection string>",
+  "ContainerName": "raceday-images",
+  "PublicBlobBaseUrl": ""
+}
+```
+
+The API creates the container if it does not exist. Leave `PublicBlobBaseUrl` empty for a real Azure account. The MVC site shows the URL the API returns. Do not commit a production connection string.
+
+### Docker
+
+From the repository root:
+
+```bash
+docker compose up --build
+```
+
+That one command builds both projects from the multi-stage `Dockerfile` and starts SQL Server, Azurite, the API, and the website.
+
+- Website: `http://localhost:5080`
+- API: `http://localhost:5258`
+- Azurite blob port: `10000`
+
+The compose file uses the public Azurite development storage account so banners and profile pictures go through the Azure Blob SDK without a cloud account. Point `AzureStorage__ConnectionString` at your own account when you want the files in Azure itself. The SQL Server password in the compose file is only for that local container.
+
+### Part 3 continuous integration
+
+`.github/workflows/part3-ci.yml` restores the solution, builds the API, builds the MVC project, and runs the unit tests. `.github/workflows/part2-ci.yml` also builds the MVC project.
+
+After the workflow is green, add a screenshot of that run beside the Part 1 screenshot already in this file.
+
+### Part 3 video
+
+Record an unlisted YouTube video in your own voice. Show the running site, the MVC structure, a banner or profile upload, and the Docker setup. Paste the link here before you submit:
+
+```
+PASTE_YOUR_YOUTUBE_LINK_HERE
+```
+
+### Part 3 status
+
+- [x] MVC site that uses the API for all data.
+- [x] Register, sign in, sign out, and separate navigation for each role.
+- [x] Organiser dashboard, events, categories, entries, and results.
+- [x] Participant home, event entry, My Events, My Results, and profile.
+- [x] Banner and profile uploads through the API, with Azure Blob Storage when configured.
+- [x] Dockerfile and Docker Compose run command.
+- [ ] YouTube link. Replace `PASTE_YOUR_YOUTUBE_LINK_HERE` with your unlisted video.
+- [ ] Screenshot of the green Part 3 GitHub Actions run.
