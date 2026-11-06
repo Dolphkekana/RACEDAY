@@ -3,24 +3,33 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<section class="hero">
+<section class="page-head">
     <p class="eyebrow">Organiser</p>
     <h1>Dashboard</h1>
     <p class="lead">Events you have created, how many people have entered, and which start dates are still ahead.</p>
 </section>
 
-<div class="event-grid metric-grid">
-    <article class="panel metric">
-        <p class="eyebrow">Events</p>
-        <p class="metric-value">@Model.EventCount</p>
+<div class="stat-grid">
+    <article class="stat-card">
+        <span class="stat-icon"><i class="bi bi-flag" aria-hidden="true"></i></span>
+        <div>
+            <p class="eyebrow">Events</p>
+            <p class="metric-value">@Model.EventCount</p>
+        </div>
     </article>
-    <article class="panel metric">
-        <p class="eyebrow">Enrolments</p>
-        <p class="metric-value">@Model.EnrolmentCount</p>
+    <article class="stat-card">
+        <span class="stat-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
+        <div>
+            <p class="eyebrow">Enrolments</p>
+            <p class="metric-value">@Model.EnrolmentCount</p>
+        </div>
     </article>
-    <article class="panel metric">
-        <p class="eyebrow">Upcoming</p>
-        <p class="metric-value">@Model.UpcomingEventCount</p>
+    <article class="stat-card">
+        <span class="stat-icon"><i class="bi bi-calendar-check" aria-hidden="true"></i></span>
+        <div>
+            <p class="eyebrow">Upcoming</p>
+            <p class="metric-value">@Model.UpcomingEventCount</p>
+        </div>
     </article>
 </div>
 
@@ -31,32 +40,37 @@
     </div>
     @if (Model.Events.Count == 0)
     {
-        <p class="meta">You have not created an event yet.</p>
+        <div class="empty-state">
+            <i class="bi bi-flag" aria-hidden="true"></i>
+            <p class="meta">You have not created an event yet.</p>
+        </div>
     }
     else
     {
-        <table class="table align-middle">
-            <thead>
-                <tr>
-                    <th>Event</th>
-                    <th>Date</th>
-                    <th>Location</th>
-                    <th>Type</th>
-                    <th>Enrolments</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var raceEvent in Model.Events)
-                {
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
                     <tr>
-                        <td><a asp-controller="ManageEvents" asp-action="Edit" asp-route-id="@raceEvent.EventId">@raceEvent.Name</a></td>
-                        <td>@raceEvent.EventDate.ToString("d MMMM yyyy")</td>
-                        <td>@raceEvent.Location</td>
-                        <td>@raceEvent.EventType</td>
-                        <td>@raceEvent.EnrolmentCount</td>
+                        <th>Event</th>
+                        <th>Date</th>
+                        <th>Location</th>
+                        <th>Type</th>
+                        <th>Enrolments</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var raceEvent in Model.Events)
+                    {
+                        <tr>
+                            <td><a asp-controller="ManageEvents" asp-action="Edit" asp-route-id="@raceEvent.EventId">@raceEvent.Name</a></td>
+                            <td>@raceEvent.EventDate.ToString("d MMMM yyyy")</td>
+                            <td>@raceEvent.Location</td>
+                            <td><span class="chip">@raceEvent.EventType</span></td>
+                            <td>@raceEvent.EnrolmentCount</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
 </section>
