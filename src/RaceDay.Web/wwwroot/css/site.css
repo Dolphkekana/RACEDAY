@@ -263,6 +263,25 @@ h1, h2, h3 {
     margin: 0;
 }
 
+.inline-form {
+    display: inline;
+}
+
+.action-cell {
+    white-space: normal;
+}
+
+.action-cell a,
+.action-cell button {
+    margin-left: 0.45rem;
+}
+
+.link-danger {
+    color: var(--clay);
+    text-decoration: none;
+    padding: 0;
+}
+
 @media (max-width: 720px) {
     .header-row {
         align-items: flex-start;

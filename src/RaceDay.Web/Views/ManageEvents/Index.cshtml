@@ -1,0 +1,60 @@
+@model IReadOnlyList<EventModel>
+@{
+    ViewData["Title"] = "Manage events";
+}
+
+<section class="hero">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Organiser</p>
+            <h1>Events</h1>
+        </div>
+        <a class="btn btn-primary" asp-action="Create">Create event</a>
+    </div>
+</section>
+
+@if (Model.Count == 0)
+{
+    <section class="panel">
+        <p>You have not created an event yet.</p>
+    </section>
+}
+else
+{
+    <section class="panel">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Distance</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var raceEvent in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>@raceEvent.Name</strong>
+                            <div class="meta">@raceEvent.EventType</div>
+                        </td>
+                        <td>@raceEvent.EventDate.ToString("d MMM yyyy")</td>
+                        <td>@raceEvent.Location</td>
+                        <td>@raceEvent.DistanceKm.ToString("0.##") km</td>
+                        <td class="text-end action-cell">
+                            <a asp-action="Edit" asp-route-id="@raceEvent.EventId">Edit</a>
+                            <a asp-controller="Categories" asp-action="Index" asp-route-eventId="@raceEvent.EventId">Categories</a>
+                            <a asp-controller="Enrolments" asp-action="Index" asp-route-eventId="@raceEvent.EventId">Entries</a>
+                            <a asp-controller="RaceResults" asp-action="Index" asp-route-eventId="@raceEvent.EventId">Results</a>
+                            <form asp-action="Delete" asp-route-id="@raceEvent.EventId" method="post" class="inline-form" onsubmit="return confirm('Delete this event?');">
+                                <button class="btn btn-link link-danger" type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+}

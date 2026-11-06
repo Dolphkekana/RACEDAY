@@ -1,0 +1,66 @@
+@model EventFormViewModel
+@{
+    var editing = Model.EventId.HasValue;
+    ViewData["Title"] = editing ? "Edit event" : "Create event";
+    var banner = MediaUrls.ForBrowser(Context, Model.BannerImageUrl);
+}
+
+<section class="panel form-panel">
+    <p class="eyebrow">Organiser</p>
+    <h1>@(editing ? "Edit event" : "Create event")</h1>
+    @if (banner is not null)
+    {
+        <div class="banner-frame mb-3">
+            <img src="@banner" alt="Current banner" />
+        </div>
+    }
+    <form asp-action="@(editing ? "Edit" : "Create")" asp-route-id="@Model.EventId" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="BannerImageUrl" />
+        <div class="mb-3">
+            <label asp-for="EventTypeId" class="form-label"></label>
+            <select asp-for="EventTypeId" class="form-select">
+                <option value="">Choose a type</option>
+                @foreach (var eventType in Model.EventTypes)
+                {
+                    <option value="@eventType.EventTypeId">@eventType.Name</option>
+                }
+            </select>
+            <span asp-validation-for="EventTypeId" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label asp-for="EventDate" class="form-label"></label>
+                <input asp-for="EventDate" class="form-control" />
+                <span asp-validation-for="EventDate" class="text-danger"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="Location" class="form-label"></label>
+                <input asp-for="Location" class="form-control" />
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="DistanceKm" class="form-label"></label>
+                <input asp-for="DistanceKm" class="form-control" step="0.01" />
+                <span asp-validation-for="DistanceKm" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Banner" class="form-label">Banner image</label>
+            <input asp-for="Banner" class="form-control" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+            <p class="meta">Optional. JPG, PNG, WEBP, or GIF up to 5 MB. The MVC site sends the file to the API.</p>
+        </div>
+        <button class="btn btn-primary" type="submit">@(editing ? "Save event" : "Create event")</button>
+        <a class="btn btn-link" asp-action="Index">Back to events</a>
+    </form>
+</section>

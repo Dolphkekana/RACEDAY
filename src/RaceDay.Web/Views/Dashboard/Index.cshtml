@@ -49,7 +49,7 @@
                 @foreach (var raceEvent in Model.Events)
                 {
                     <tr>
-                        <td>@raceEvent.Name</td>
+                        <td><a asp-controller="ManageEvents" asp-action="Edit" asp-route-id="@raceEvent.EventId">@raceEvent.Name</a></td>
                         <td>@raceEvent.EventDate.ToString("d MMMM yyyy")</td>
                         <td>@raceEvent.Location</td>
                         <td>@raceEvent.EventType</td>
