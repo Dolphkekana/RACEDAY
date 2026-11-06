@@ -1,0 +1,62 @@
+@model DashboardModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<section class="hero">
+    <p class="eyebrow">Organiser</p>
+    <h1>Dashboard</h1>
+    <p class="lead">Events you have created, how many people have entered, and which start dates are still ahead.</p>
+</section>
+
+<div class="event-grid metric-grid">
+    <article class="panel metric">
+        <p class="eyebrow">Events</p>
+        <p class="metric-value">@Model.EventCount</p>
+    </article>
+    <article class="panel metric">
+        <p class="eyebrow">Enrolments</p>
+        <p class="metric-value">@Model.EnrolmentCount</p>
+    </article>
+    <article class="panel metric">
+        <p class="eyebrow">Upcoming</p>
+        <p class="metric-value">@Model.UpcomingEventCount</p>
+    </article>
+</div>
+
+<section class="panel">
+    <div class="section-heading">
+        <h2>Your events</h2>
+        <a class="btn btn-primary" asp-controller="ManageEvents" asp-action="Create">Create event</a>
+    </div>
+    @if (Model.Events.Count == 0)
+    {
+        <p class="meta">You have not created an event yet.</p>
+    }
+    else
+    {
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Type</th>
+                    <th>Enrolments</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var raceEvent in Model.Events)
+                {
+                    <tr>
+                        <td>@raceEvent.Name</td>
+                        <td>@raceEvent.EventDate.ToString("d MMMM yyyy")</td>
+                        <td>@raceEvent.Location</td>
+                        <td>@raceEvent.EventType</td>
+                        <td>@raceEvent.EnrolmentCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</section>

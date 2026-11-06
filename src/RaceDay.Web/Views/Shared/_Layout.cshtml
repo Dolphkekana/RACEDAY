@@ -26,6 +26,10 @@
                         <a asp-controller="MyResults" asp-action="Index">My results</a>
                         <a asp-controller="Profile" asp-action="Index">Profile</a>
                     }
+                    else if (Context.Session.GetString(AppSession.Role) == "Organiser")
+                    {
+                        <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                    }
                     <span class="nav-user">@Context.Session.GetString(AppSession.DisplayName)</span>
                     <form asp-controller="Account" asp-action="Logout" method="post" class="nav-logout">
                         <button class="linkish" type="submit">Sign out</button>
