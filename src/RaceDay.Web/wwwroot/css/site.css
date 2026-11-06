@@ -289,6 +289,16 @@ h1, h2, h3 {
     max-width: 220px;
 }
 
+.result-form {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+.result-form .form-control {
+    max-width: 140px;
+}
+
 @media (max-width: 720px) {
     .header-row {
         align-items: flex-start;

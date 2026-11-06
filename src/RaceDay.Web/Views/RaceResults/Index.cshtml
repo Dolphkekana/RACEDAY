@@ -1,0 +1,62 @@
+@model ResultEntryViewModel
+@{
+    ViewData["Title"] = "Results";
+}
+
+<section class="hero">
+    <p class="eyebrow">Organiser</p>
+    <h1>Results for @Model.EventName</h1>
+    <p class="lead">Capture or correct a finish time and position after the event. Participants see the published result on My Results.</p>
+    <a asp-controller="ManageEvents" asp-action="Edit" asp-route-id="@Model.EventId">Back to event</a>
+</section>
+
+@if (Model.Rows.Count == 0)
+{
+    <section class="panel">
+        <p>There are no entries to record yet.</p>
+    </section>
+}
+else
+{
+    <section class="panel">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Participant</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Finish time</th>
+                    <th>Position</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model.Rows)
+                {
+                    <tr>
+                        <td>@row.ParticipantName</td>
+                        <td>@row.CategoryName</td>
+                        <td><partial name="_StatusBadge" model="row.Status" /></td>
+                        <td colspan="3">
+                            <form asp-action="Save" method="post" class="result-form">
+                                <input type="hidden" name="eventId" value="@Model.EventId" />
+                                <input type="hidden" name="enrolmentId" value="@row.EnrolmentId" />
+                                @if (row.ResultId is not null)
+                                {
+                                    <input type="hidden" name="resultId" value="@row.ResultId" />
+                                }
+                                <input class="form-control" name="finishTime" value="@row.FinishTime" aria-label="Finish time for @row.ParticipantName" />
+                                <input class="form-control" name="finishingPosition" type="number" min="1" value="@row.FinishingPosition" aria-label="Position for @row.ParticipantName" />
+                                <button class="btn btn-primary" type="submit">@(row.ResultId is null ? "Publish" : "Update")</button>
+                            </form>
+                            @if (row.ResultId is not null)
+                            {
+                                <p class="meta">@RaceDayFormat.Placement(row.FinishingPosition, row.FinisherCount)</p>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+}
