@@ -4,22 +4,24 @@
     var statuses = new[] { "Pending", "Confirmed", "Cancelled" };
 }
 
-<section class="hero">
+<section class="page-head">
     <p class="eyebrow">Organiser</p>
     <h1>Entries for @Model.EventName</h1>
     <p class="lead">Participants who have entered, the category they chose, and their enrolment status.</p>
-    <a asp-controller="ManageEvents" asp-action="Edit" asp-route-id="@Model.EventId">Back to event</a>
+    <a class="btn btn-link px-0" asp-controller="ManageEvents" asp-action="Edit" asp-route-id="@Model.EventId">Back to event</a>
 </section>
 
 @if (Model.Enrolments.Count == 0)
 {
-    <section class="panel">
-        <p>Nobody has entered this event yet.</p>
+    <section class="panel empty-state">
+        <i class="bi bi-people" aria-hidden="true"></i>
+        <h2>Nobody has entered this event yet.</h2>
     </section>
 }
 else
 {
     <section class="panel">
+        <div class="table-responsive">
         <table class="table align-middle">
             <thead>
                 <tr>
@@ -61,5 +63,6 @@ else
                 }
             </tbody>
         </table>
+        </div>
     </section>
 }

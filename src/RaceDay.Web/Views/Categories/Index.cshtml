@@ -3,11 +3,11 @@
     ViewData["Title"] = "Categories";
 }
 
-<section class="hero">
+<section class="page-head">
     <p class="eyebrow">Organiser</p>
     <h1>Categories for @Model.EventName</h1>
     <p class="lead">Add age or distance categories. Participants choose one of these when they enter.</p>
-    <a asp-controller="ManageEvents" asp-action="Edit" asp-route-id="@Model.EventId">Back to event</a>
+    <a class="btn btn-link px-0" asp-controller="ManageEvents" asp-action="Edit" asp-route-id="@Model.EventId">Back to event</a>
 </section>
 
 <section class="panel form-panel">
@@ -22,8 +22,9 @@
 
 @if (Model.Categories.Count == 0)
 {
-    <section class="panel">
-        <p>No categories yet.</p>
+    <section class="panel empty-state">
+        <i class="bi bi-diagram-3" aria-hidden="true"></i>
+        <h2>No categories yet.</h2>
     </section>
 }
 else

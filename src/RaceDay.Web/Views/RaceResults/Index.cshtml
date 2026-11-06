@@ -3,22 +3,24 @@
     ViewData["Title"] = "Results";
 }
 
-<section class="hero">
+<section class="page-head">
     <p class="eyebrow">Organiser</p>
     <h1>Results for @Model.EventName</h1>
     <p class="lead">Capture or correct a finish time and position after the event. Participants see the published result on My Results.</p>
-    <a asp-controller="ManageEvents" asp-action="Edit" asp-route-id="@Model.EventId">Back to event</a>
+    <a class="btn btn-link px-0" asp-controller="ManageEvents" asp-action="Edit" asp-route-id="@Model.EventId">Back to event</a>
 </section>
 
 @if (Model.Rows.Count == 0)
 {
-    <section class="panel">
-        <p>There are no entries to record yet.</p>
+    <section class="panel empty-state">
+        <i class="bi bi-trophy" aria-hidden="true"></i>
+        <h2>There are no entries to record yet.</h2>
     </section>
 }
 else
 {
     <section class="panel">
+        <div class="table-responsive">
         <table class="table align-middle">
             <thead>
                 <tr>
@@ -58,5 +60,6 @@ else
                 }
             </tbody>
         </table>
+        </div>
     </section>
 }
