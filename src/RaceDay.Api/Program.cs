@@ -12,7 +12,7 @@ using AppAuthenticationServiceContract = RaceDay.Api.Services.IAuthenticationSer
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Register controller services 
+// Register controllers, problem responses, and the server-side session used for sign-in.
 builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
 builder.Services.AddHttpContextAccessor();
@@ -38,6 +38,7 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<AppAuthenticationServiceContract, AppAuthenticationService>();
 builder.Services.Configure<ImageStorageOptions>(
     builder.Configuration.GetSection(ImageStorageOptions.SectionName));
+// An empty connection string means local disk. A value uses the Azure Blob SDK, including Azurite.
 if (string.IsNullOrWhiteSpace(builder.Configuration["AzureStorage:ConnectionString"]))
 {
     builder.Services.AddSingleton<IImageStorage, LocalFileImageStorage>();
@@ -61,7 +62,7 @@ builder.Services.AddDbContext<RaceDayDbContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
-//Register Swagger / OpenAPI services with metadata and XML documentation 
+// Swagger reads the [SwaggerOperation] notes so each endpoint documents its purpose and status codes.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -130,6 +131,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Session must run before authentication. The handler reads the user id from that session.
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -138,5 +140,5 @@ app.MapControllers();
 
 app.Run();
 
-// Make the implicit Program class public for xUnit integration testing if needed 
+// Make the implicit Program class public so the test host can boot the API.
 public partial class Program { }

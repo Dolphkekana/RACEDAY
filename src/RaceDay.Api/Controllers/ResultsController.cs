@@ -227,5 +227,6 @@ public sealed class ResultsController(RaceDayDbContext dbContext) : ControllerBa
             result.FinishTime,
             result.FinishingPosition,
             result.RecordedAt,
+            // Finishers are enrolments that already have a result, not everyone who entered.
             result.Enrolment.Event.Enrolments.Count(enrolment => enrolment.Result != null));
 }

@@ -31,6 +31,7 @@ public sealed class LocalFileImageStorage(IWebHostEnvironment environment) : IIm
 
         var root = Path.GetFullPath(Path.Combine(environment.ContentRootPath, "App_Data", "images"));
         var path = Path.GetFullPath(Path.Combine(root, container, fileName));
+        // Reject names that resolve outside the image folder.
         if (!path.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.Ordinal))
         {
             return null;

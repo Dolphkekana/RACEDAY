@@ -22,6 +22,7 @@ public sealed class OrganiserDashboardController(RaceDayDbContext dbContext) : C
     public async Task<ActionResult<OrganiserDashboardResponse>> Get(CancellationToken cancellationToken)
     {
         var organiserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        // EventDate is a date. Compare it with today's UTC date so a race later today still counts as upcoming.
         var today = DateTime.UtcNow.Date;
 
         var events = await dbContext.Events
@@ -36,6 +37,7 @@ public sealed class OrganiserDashboardController(RaceDayDbContext dbContext) : C
                 raceEvent.Location,
                 raceEvent.DistanceKm,
                 raceEvent.EventType!.Name,
+                // Every enrolment counts, including Pending and Cancelled, so the total matches the entries page.
                 raceEvent.Enrolments.Count,
                 raceEvent.BannerImageUrl))
             .ToListAsync(cancellationToken);

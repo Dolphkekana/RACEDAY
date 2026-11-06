@@ -97,6 +97,8 @@ public sealed class AuthController(
             });
         }
 
+        // The session middleware turns these keys into the HttpOnly RaceDay.Session cookie.
+        // The JSON body only returns the profile. It never returns the session id or the password hash.
         var session = httpContextAccessor.HttpContext!.Session;
         session.SetInt32(UserSession.UserIdKey, response.UserId);
         session.SetString(UserSession.RoleKey, response.Role);

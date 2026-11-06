@@ -56,6 +56,7 @@ public sealed class UsersController(
         IFormFile? file,
         CancellationToken cancellationToken)
     {
+        // The picture is stored first. Only the returned URL is written onto the user row.
         var validationError = ImageUploadRules.Validate(file);
         if (validationError is not null || file is null)
         {

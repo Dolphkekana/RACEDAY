@@ -22,6 +22,8 @@ public sealed class SessionAuthenticationHandler(
         var session = httpContextAccessor.HttpContext?.Session;
         var userId = session?.GetInt32(UserSession.UserIdKey);
 
+        // No session cookie means the caller is anonymous. NoResult lets [AllowAnonymous] routes through
+        // and lets [Authorize] return 401 rather than treating a missing cookie as a failed login.
         if (userId is null)
         {
             return AuthenticateResult.NoResult();
@@ -39,6 +41,7 @@ public sealed class SessionAuthenticationHandler(
             return AuthenticateResult.NoResult();
         }
 
+        // The role is read from the database on each request so a stale session value cannot grant access.
         session!.SetString(UserSession.RoleKey, user.Role);
 
         var claims = new[]

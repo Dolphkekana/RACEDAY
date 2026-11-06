@@ -49,6 +49,7 @@ public sealed class EventsController(
 
         if (upcoming == true)
         {
+            // Same date rule as the dashboard: a race dated today is still upcoming.
             var today = DateTime.UtcNow.Date;
             query = query.Where(raceEvent => raceEvent.EventDate >= today);
         }
@@ -302,6 +303,7 @@ public sealed class EventsController(
             return Forbid();
         }
 
+        // Banners are a separate multipart call. The JSON create and update routes stay free of file data.
         var validationError = ImageUploadRules.Validate(file);
         if (validationError is not null || file is null)
         {

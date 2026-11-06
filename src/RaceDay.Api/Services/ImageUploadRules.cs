@@ -40,6 +40,7 @@ public static class ImageUploadRules
         return null;
     }
 
+    // The stored name comes from the content type, not the uploaded file name, so it cannot carry a path.
     public static string CreateFileName(string contentType)
     {
         var extension = ExtensionByContentType.TryGetValue(contentType, out var known)

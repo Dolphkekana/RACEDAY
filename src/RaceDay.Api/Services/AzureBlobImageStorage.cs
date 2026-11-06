@@ -49,6 +49,7 @@ public sealed class AzureBlobImageStorage : IImageStorage
             return blobClient.Uri.ToString();
         }
 
+        // Azurite is reached on an internal host. The stored URL uses the host the browser can open.
         return $"{publicBlobBaseUrl}/{containerName}/{blobName}";
     }
 }
