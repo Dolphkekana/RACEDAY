@@ -1,3 +1,10 @@
+@{
+    var role = Context.Session.GetString(AppSession.Role);
+    var signedIn = Context.Session.GetInt32(AppSession.UserId) is not null;
+    var isOrganiser = role == "Organiser";
+    var isParticipant = role == "Participant";
+    var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,32 +12,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - RaceDay</title>
     <link rel="stylesheet" href="~/lib/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
     <header class="site-header">
         <div class="container header-row">
-            <a class="brand" asp-controller="Home" asp-action="Index">RaceDay</a>
+            <a class="brand" asp-controller="Home" asp-action="Index">
+                <span class="brand-mark" aria-hidden="true"></span>
+                RaceDay
+            </a>
+            @if (isOrganiser)
+            {
+                <button class="menu-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#organiserNav" aria-controls="organiserNav">
+                    <i class="bi bi-list" aria-hidden="true"></i>
+                    <span>Menu</span>
+                </button>
+            }
             <nav class="main-nav" aria-label="Primary">
-                <a asp-controller="Home" asp-action="Index">Events</a>
-                @if (Context.Session.GetInt32(AppSession.UserId) is null)
+                <a class="@(current == "Home" ? "is-active" : null)" asp-controller="Home" asp-action="Index">Events</a>
+                @if (!signedIn)
                 {
                     <a asp-controller="Account" asp-action="Login">Sign in</a>
-                    <a asp-controller="Account" asp-action="Register">Register</a>
+                    <a class="nav-register" asp-controller="Account" asp-action="Register">Register</a>
+                }
+                else if (isParticipant)
+                {
+                    <a class="@(current == "MyEvents" ? "is-active" : null)" asp-controller="MyEvents" asp-action="Index">My events</a>
+                    <a class="@(current == "MyResults" ? "is-active" : null)" asp-controller="MyResults" asp-action="Index">My results</a>
+                    <a class="@(current == "Profile" ? "is-active" : null)" asp-controller="Profile" asp-action="Index">Profile</a>
+                    <span class="nav-user">@Context.Session.GetString(AppSession.DisplayName)</span>
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="nav-logout">
+                        <button class="linkish" type="submit">Sign out</button>
+                    </form>
                 }
                 else
                 {
-                    if (Context.Session.GetString(AppSession.Role) == "Participant")
-                    {
-                        <a asp-controller="MyEvents" asp-action="Index">My events</a>
-                        <a asp-controller="MyResults" asp-action="Index">My results</a>
-                        <a asp-controller="Profile" asp-action="Index">Profile</a>
-                    }
-                    else if (Context.Session.GetString(AppSession.Role) == "Organiser")
-                    {
-                        <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
-                        <a asp-controller="ManageEvents" asp-action="Index">Manage</a>
-                    }
                     <span class="nav-user">@Context.Session.GetString(AppSession.DisplayName)</span>
                     <form asp-controller="Account" asp-action="Logout" method="post" class="nav-logout">
                         <button class="linkish" type="submit">Sign out</button>
@@ -39,20 +56,57 @@
             </nav>
         </div>
     </header>
-    <main class="container page-content">
-        @if (TempData["Error"] is string errorMessage)
-        {
-            <div class="alert alert-danger" role="alert">@errorMessage</div>
-        }
-        @if (TempData["Success"] is string successMessage)
-        {
-            <div class="alert alert-success" role="alert">@successMessage</div>
-        }
-        @RenderBody()
-    </main>
-    <footer class="site-footer">
-        <div class="container">RaceDay community road events</div>
-    </footer>
+
+    @if (isOrganiser)
+    {
+        <div class="app-shell">
+            <aside class="offcanvas-lg offcanvas-start side-nav" tabindex="-1" id="organiserNav" aria-label="Organiser">
+                <div class="offcanvas-header">
+                    <h2 class="offcanvas-title">Organiser</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#organiserNav" aria-label="Close menu"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <p class="side-label">Manage</p>
+                    <a class="side-link @(current == "Dashboard" ? "is-active" : null)" asp-controller="Dashboard" asp-action="Index">
+                        <i class="bi bi-speedometer2" aria-hidden="true"></i> Dashboard
+                    </a>
+                    <a class="side-link @(current == "ManageEvents" || current == "Categories" ? "is-active" : null)" asp-controller="ManageEvents" asp-action="Index">
+                        <i class="bi bi-flag" aria-hidden="true"></i> Events
+                    </a>
+                    <a class="side-link @(current == "Enrolments" ? "is-active" : null)" asp-controller="ManageEvents" asp-action="Index">
+                        <i class="bi bi-people" aria-hidden="true"></i> Entries
+                    </a>
+                    <a class="side-link @(current == "RaceResults" ? "is-active" : null)" asp-controller="ManageEvents" asp-action="Index">
+                        <i class="bi bi-trophy" aria-hidden="true"></i> Results
+                    </a>
+                    <p class="side-label">Site</p>
+                    <a class="side-link @(current == "Home" || current == "Events" ? "is-active" : null)" asp-controller="Home" asp-action="Index">
+                        <i class="bi bi-calendar-event" aria-hidden="true"></i> Public events
+                    </a>
+                </div>
+            </aside>
+            <div class="app-main">
+                <main class="container page-content">
+                    <partial name="_Alerts" />
+                    @RenderBody()
+                </main>
+                <footer class="site-footer">
+                    <div class="container">RaceDay community road events</div>
+                </footer>
+            </div>
+        </div>
+    }
+    else
+    {
+        <main class="container page-content">
+            <partial name="_Alerts" />
+            @RenderBody()
+        </main>
+        <footer class="site-footer">
+            <div class="container">RaceDay community road events</div>
+        </footer>
+    }
+
     <script src="~/lib/bootstrap/bootstrap.bundle.min.js"></script>
 </body>
 </html>
