@@ -17,14 +17,16 @@ public sealed class EventsController(
     RaceDayDbContext dbContext,
     IImageStorage imageStorage) : ControllerBase
 {
-    [SwaggerOperation(Summary = "List events", Description = "Public. Lists all events. Optional filters: eventTypeId, location, eventDate, minDistance and maxDistance.")]
+    [SwaggerOperation(Summary = "List events", Description = "Public. Lists all events. Optional filters: name, eventTypeId, location, eventDate, upcoming, minDistance and maxDistance.")]
     [HttpGet]
     [AllowAnonymous]
     [ProducesResponseType(typeof(IReadOnlyCollection<EventResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyCollection<EventResponse>>> GetAll(
+        [FromQuery] string? name,
         [FromQuery] int? eventTypeId,
         [FromQuery] string? location,
         [FromQuery] DateTime? eventDate,
+        [FromQuery] bool? upcoming,
         [FromQuery] decimal? minDistance,
         [FromQuery] decimal? maxDistance,
         CancellationToken cancellationToken)
@@ -35,9 +37,20 @@ public sealed class EventsController(
             .Include(raceEvent => raceEvent.Categories)
             .AsQueryable();
 
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            query = query.Where(raceEvent => raceEvent.Name.Contains(name.Trim()));
+        }
+
         if (eventTypeId.HasValue)
         {
             query = query.Where(raceEvent => raceEvent.EventTypeId == eventTypeId.Value);
+        }
+
+        if (upcoming == true)
+        {
+            var today = DateTime.UtcNow.Date;
+            query = query.Where(raceEvent => raceEvent.EventDate >= today);
         }
 
         if (!string.IsNullOrWhiteSpace(location))
