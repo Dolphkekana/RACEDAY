@@ -1,0 +1,110 @@
+@model EventDetailViewModel
+@{
+    ViewData["Title"] = Model.Event.Name;
+    var banner = MediaUrls.ForBrowser(Context, Model.Event.BannerImageUrl);
+    var role = Context.Session.GetString(AppSession.Role);
+}
+
+<section class="panel">
+    @if (banner is not null)
+    {
+        <div class="banner-frame">
+            <img src="@banner" alt="Banner for @Model.Event.Name" />
+        </div>
+    }
+    <p class="eyebrow">@Model.Event.EventType · @Model.Event.DistanceKm.ToString("0.##") km</p>
+    <h1>@Model.Event.Name</h1>
+    <p class="meta">@Model.Event.EventDate.ToString("dddd, d MMMM yyyy") · @Model.Event.Location</p>
+    <p>@Model.Event.Description</p>
+</section>
+
+<section class="panel">
+    <h2>Categories</h2>
+    @if (Model.Event.Categories.Count == 0)
+    {
+        <p class="meta">The organiser has not published categories yet.</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Ages</th>
+                    <th>Distance</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var category in Model.Event.Categories)
+                {
+                    <tr>
+                        <td>@category.Name</td>
+                        <td>@FormatAge(category.MinimumAge, category.MaximumAge)</td>
+                        <td>@(category.DistanceKm is null ? "Not set" : $"{category.DistanceKm:0.##} km")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</section>
+
+<section class="panel">
+    <h2>Enter this event</h2>
+    @if (Model.ExistingEnrolment is not null)
+    {
+        <p>You are already entered in <strong>@Model.ExistingEnrolment.CategoryName</strong>.</p>
+        <partial name="_StatusBadge" model="Model.ExistingEnrolment.Status" />
+    }
+    else if (role == "Organiser")
+    {
+        <p class="meta">Organiser accounts manage this event. A participant account is used to enter.</p>
+    }
+    else if (role != "Participant")
+    {
+        <p class="meta">Sign in as a participant to choose a category and enter.</p>
+        <a class="btn btn-primary" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path">Sign in</a>
+    }
+    else if (Model.Event.Categories.Count == 0)
+    {
+        <p class="meta">Entry opens once a category is available.</p>
+    }
+    else
+    {
+        <form asp-action="Enrol" asp-route-id="@Model.Event.EventId" method="post" class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <label class="form-label" for="categoryId">Category</label>
+                <select class="form-select" id="categoryId" name="categoryId">
+                    @foreach (var category in Model.Event.Categories)
+                    {
+                        <option value="@category.CategoryId">@category.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <button class="btn btn-primary" type="submit">Enter event</button>
+            </div>
+        </form>
+    }
+</section>
+
+@functions {
+    private static string FormatAge(int? minimum, int? maximum)
+    {
+        if (minimum is null && maximum is null)
+        {
+            return "Open";
+        }
+
+        if (minimum is null)
+        {
+            return $"Up to {maximum}";
+        }
+
+        if (maximum is null)
+        {
+            return $"{minimum}+";
+        }
+
+        return $"{minimum} to {maximum}";
+    }
+}
