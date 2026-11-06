@@ -27,5 +27,8 @@ jobs:
       - name: Build solution
         run: dotnet build RaceDay.sln --no-restore --configuration Release
 
+      - name: Build the MVC web application
+        run: dotnet build src/RaceDay.Web/RaceDay.Web.csproj --configuration Release --no-restore
+
       - name: Run unit tests
         run: dotnet test RaceDay.sln --no-build --configuration Release --verbosity normal
