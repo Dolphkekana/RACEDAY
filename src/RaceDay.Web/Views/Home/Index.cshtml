@@ -1,9 +1,78 @@
+@model EventFilterViewModel
 @{
-    ViewData["Title"] = "Events";
+    ViewData["Title"] = "Upcoming events";
 }
 
 <section class="hero">
-    <p class="eyebrow">South African road running, walking, and cycling</p>
+    <p class="eyebrow">Upcoming events</p>
     <h1>Find your next start line.</h1>
-    <p class="lead">RaceDay brings event listings, entries, and results into one place for organisers and participants.</p>
+    <p class="lead">Browse road runs, walks, and rides. Filter by name, type, place, or distance.</p>
 </section>
+
+<form method="get" class="panel">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" placeholder="Event name" />
+        </div>
+        <div class="col-md-2">
+            <label asp-for="EventTypeId" class="form-label"></label>
+            <select asp-for="EventTypeId" class="form-select">
+                <option value="">All types</option>
+                @foreach (var eventType in Model.EventTypes)
+                {
+                    <option value="@eventType.EventTypeId">@eventType.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label asp-for="Location" class="form-label"></label>
+            <input asp-for="Location" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <label asp-for="MinDistance" class="form-label"></label>
+            <input asp-for="MinDistance" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <label asp-for="MaxDistance" class="form-label"></label>
+            <input asp-for="MaxDistance" class="form-control" />
+        </div>
+        <div class="col-12">
+            <button class="btn btn-primary" type="submit">Apply filters</button>
+            <a class="btn btn-link" asp-action="Index">Clear</a>
+        </div>
+    </div>
+</form>
+
+@if (Model.Events.Count == 0)
+{
+    <section class="panel">
+        <h2>No upcoming events match those filters.</h2>
+        <p class="meta">Try a wider search, or check back when organisers publish the next race.</p>
+    </section>
+}
+else
+{
+    <div class="event-grid">
+        @foreach (var raceEvent in Model.Events)
+        {
+            var banner = MediaUrls.ForBrowser(Context, raceEvent.BannerImageUrl);
+            <article class="event-card">
+                @if (banner is null)
+                {
+                    <div class="banner-fallback">@raceEvent.EventType</div>
+                }
+                else
+                {
+                    <img src="@banner" alt="Banner for @raceEvent.Name" />
+                }
+                <div class="card-body">
+                    <p class="eyebrow">@raceEvent.EventType · @raceEvent.DistanceKm.ToString("0.##") km</p>
+                    <h2>@raceEvent.Name</h2>
+                    <p class="meta">@raceEvent.EventDate.ToString("dddd, d MMMM yyyy")<br />@raceEvent.Location</p>
+                    <a class="btn btn-primary" asp-controller="Events" asp-action="Details" asp-route-id="@raceEvent.EventId">View event</a>
+                </div>
+            </article>
+        }
+    </div>
+}

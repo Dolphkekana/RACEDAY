@@ -140,6 +140,21 @@ h1, h2, h3 {
     background: #d9e7e1;
 }
 
+.banner-fallback {
+    height: 150px;
+    display: flex;
+    align-items: flex-end;
+    padding: 1rem;
+    background:
+        linear-gradient(135deg, rgba(230, 163, 23, 0.35), transparent 55%),
+        var(--pine);
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
 .event-card .card-body,
 .pad {
     padding: 1rem;
