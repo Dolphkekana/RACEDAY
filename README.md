@@ -457,9 +457,9 @@ Part 1 documentation is stored inside the `/docs` directory.
 
 ## CI Successful Build
 
-Evidence of a successful **RaceDay Part 1 Validation** workflow run on GitHub Actions:
+Evidence of successful RaceDay Part 1 Validation, Part 2 CI and Part 3 CI workflow runs on GitHub Actions:
 
-<img src="docs/ci-run.png" alt="CI Successful Build" width="800" />
+<img src="docs/ci-run-part3.png" alt="CI Successful Build" width="800" />
 
 ## Sample Accounts
 
@@ -727,11 +727,6 @@ The compose file uses the public Azurite development storage account so banners 
 ### Part 3 continuous integration
 
 `.github/workflows/part3-ci.yml` restores the solution, builds the API, builds the MVC project, and runs the unit tests. `.github/workflows/part2-ci.yml` also builds the MVC project.
-
-Evidence of successful Part 1, Part 2, and Part 3 GitHub Actions runs:
-
-<img src="docs/ci-run-part3.png" alt="Part 3 CI successful build" width="800" />
-
 
 ### Part 3 status
 
