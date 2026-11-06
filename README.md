@@ -728,7 +728,9 @@ The compose file uses the public Azurite development storage account so banners 
 
 `.github/workflows/part3-ci.yml` restores the solution, builds the API, builds the MVC project, and runs the unit tests. `.github/workflows/part2-ci.yml` also builds the MVC project.
 
-After the workflow is green, add a screenshot of that run beside the Part 1 screenshot already in this file.
+Evidence of successful Part 1, Part 2, and Part 3 GitHub Actions runs:
+
+<img src="docs/ci-run-part3.png" alt="Part 3 CI successful build" width="800" />
 
 
 ### Part 3 status
@@ -740,4 +742,4 @@ After the workflow is green, add a screenshot of that run beside the Part 1 scre
 - [x] Banner and profile uploads through the API, with Azure Blob Storage when configured.
 - [x] Dockerfile and Docker Compose run command.
 - [ ] YouTube link. Replace `PASTE_YOUR_YOUTUBE_LINK_HERE` with your unlisted video.
-- [ ] Screenshot of the green Part 3 GitHub Actions run.
+- [x] Screenshot of the green Part 3 GitHub Actions run.
