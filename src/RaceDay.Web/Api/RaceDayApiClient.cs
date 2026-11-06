@@ -220,6 +220,7 @@ public sealed class RaceDayApiClient(HttpClient httpClient)
     {
         var response = await httpClient.PostAsJsonAsync(
             $"/api/enrolments/{enrolmentId}/result",
+            // Always send hh:mm:ss. A value such as 45:10 would be read as 45 hours.
             new { finishTime = finishTime.ToString(@"hh\:mm\:ss"), finishingPosition },
             JsonOptions,
             cancellationToken);
@@ -276,6 +277,8 @@ public sealed class RaceDayApiClient(HttpClient httpClient)
         {
             return;
         }
+
+        // Problem details from the API become the message shown on the page, not a raw status code.
 
         throw new ApiException((int)response.StatusCode, await ReadErrorAsync(response, cancellationToken));
     }

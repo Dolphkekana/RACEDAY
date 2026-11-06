@@ -41,6 +41,7 @@ public sealed class ManageEventsController(RaceDayApiClient apiClient) : Control
         try
         {
             var created = await apiClient.CreateEventAsync(ToWrite(model), cancellationToken);
+            // The event is JSON. The banner, if chosen, is a second call so the API can store the file.
             if (model.Banner is { Length: > 0 })
             {
                 await apiClient.UploadBannerAsync(created.EventId, model.Banner, cancellationToken);

@@ -11,6 +11,7 @@ public sealed class DashboardController(RaceDayApiClient apiClient) : Controller
     {
         try
         {
+            // Totals are calculated by the API. This page only displays them.
             var dashboard = await apiClient.GetDashboardAsync(cancellationToken);
             return View(dashboard);
         }

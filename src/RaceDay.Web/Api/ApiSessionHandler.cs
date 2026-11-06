@@ -1,6 +1,7 @@
 namespace RaceDay.Web.Api;
 
 // Forwards the API session cookie stored in the MVC session, and keeps it updated.
+// The HTTP client itself does not keep cookies, so two browsers cannot share one API session.
 public sealed class ApiSessionHandler(IHttpContextAccessor httpContextAccessor) : DelegatingHandler
 {
     private const string CookieName = "RaceDay.Session";
@@ -32,6 +33,7 @@ public sealed class ApiSessionHandler(IHttpContextAccessor httpContextAccessor) 
             }
 
             var cookieValue = pair[(CookieName.Length + 1)..];
+            // Logout sends an empty RaceDay.Session cookie. Drop the stored value so the next call is anonymous.
             if (string.IsNullOrEmpty(cookieValue))
             {
                 session.Remove(AppSession.ApiCookie);

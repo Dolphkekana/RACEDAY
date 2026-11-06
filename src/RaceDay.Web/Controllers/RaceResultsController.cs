@@ -31,6 +31,7 @@ public sealed class RaceResultsController(RaceDayApiClient apiClient) : Controll
         int finishingPosition,
         CancellationToken cancellationToken)
     {
+        // Reject 00:00:00 and anything of 24 hours or more. The form posts hh:mm:ss.
         if (!TimeSpan.TryParse(finishTime, out var parsed) || parsed <= TimeSpan.Zero || parsed >= TimeSpan.FromDays(1))
         {
             TempData["Error"] = "Enter a finish time greater than zero and under 24 hours, such as 01:42:35.";
@@ -45,6 +46,7 @@ public sealed class RaceResultsController(RaceDayApiClient apiClient) : Controll
 
         try
         {
+            // No result id means this entry has not been published yet.
             if (resultId is null)
             {
                 await apiClient.CreateResultAsync(enrolmentId, parsed, finishingPosition, cancellationToken);

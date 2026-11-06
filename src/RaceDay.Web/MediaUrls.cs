@@ -12,9 +12,11 @@ public static class MediaUrls
         if (url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
             || url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
         {
+            // Azure and Azurite already return a full URL the browser can request.
             return url;
         }
 
+        // Local files are stored as /api/media/... and must be prefixed with the API address the browser can reach.
         var configuration = httpContext.RequestServices.GetRequiredService<IConfiguration>();
         var publicBase = configuration["Api:PublicBaseUrl"];
         if (string.IsNullOrWhiteSpace(publicBase))

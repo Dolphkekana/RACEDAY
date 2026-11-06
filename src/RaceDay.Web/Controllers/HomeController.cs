@@ -30,6 +30,7 @@ public sealed class HomeController(RaceDayApiClient apiClient) : Controller
                 name,
                 eventTypeId,
                 location,
+                // The home page is the upcoming list. Past events stay out of this filter.
                 upcoming: true,
                 minDistance,
                 maxDistance,

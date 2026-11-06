@@ -99,6 +99,7 @@ public sealed class AccountController(RaceDayApiClient apiClient) : Controller
         return RedirectToAction("Index", "Home");
     }
 
+    // Display fields live in the MVC session. The API cookie is saved by ApiSessionHandler during login.
     private void Remember(UserModel user)
     {
         HttpContext.Session.SetInt32(AppSession.UserId, user.UserId);
@@ -113,6 +114,7 @@ public sealed class AccountController(RaceDayApiClient apiClient) : Controller
 
     private IActionResult RedirectAfterLogin(string role, string? returnUrl)
     {
+        // Only same-site return addresses are followed, so a login cannot redirect off this site.
         if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
         {
             return Redirect(returnUrl);

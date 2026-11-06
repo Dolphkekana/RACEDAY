@@ -19,6 +19,7 @@ public sealed class RequireLoginAttribute : Attribute, IFilterFactory
     {
         public void OnActionExecuting(ActionExecutingContext context)
         {
+            // This checks the MVC session. The API cookie is attached later by ApiSessionHandler.
             var session = context.HttpContext.Session;
             var userId = session.GetInt32(AppSession.UserId);
             var currentRole = session.GetString(AppSession.Role);
@@ -29,6 +30,7 @@ public sealed class RequireLoginAttribute : Attribute, IFilterFactory
                 return;
             }
 
+            // A participant who opens an organiser page is sent home instead of seeing a 403 page.
             if (!string.IsNullOrEmpty(role) && !string.Equals(currentRole, role, StringComparison.Ordinal))
             {
                 var tempData = context.HttpContext.RequestServices
