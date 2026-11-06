@@ -15,7 +15,7 @@ namespace RaceDay.Api.Data.Migrations
     [Migration("20261106224426_AddProfileImageUrl")]
     partial class AddProfileImageUrl
     {
-        /// <inheritdoc />
+        // Builds the model snapshot that EF Core stores with this migration.
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

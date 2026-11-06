@@ -4,10 +4,10 @@
 
 namespace RaceDay.Api.Data.Migrations
 {
-    /// <inheritdoc />
+    // Replaces the generated migration base members.
     public partial class AddProfileImageUrl : Migration
     {
-        /// <inheritdoc />
+        // Adds the optional profile image column.
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
@@ -18,7 +18,7 @@ namespace RaceDay.Api.Data.Migrations
                 nullable: true);
         }
 
-        /// <inheritdoc />
+        // Removes the profile image column.
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
