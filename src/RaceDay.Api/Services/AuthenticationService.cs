@@ -88,6 +88,24 @@ public sealed class AuthenticationService(
         return ToResponse(user);
     }
 
+    public async Task<UserResponse?> SetProfileImageAsync(
+        int userId,
+        string imageUrl,
+        CancellationToken cancellationToken)
+    {
+        var user = await dbContext.Users
+            .SingleOrDefaultAsync(candidate => candidate.UserId == userId, cancellationToken);
+
+        if (user is null)
+        {
+            return null;
+        }
+
+        user.ProfileImageUrl = imageUrl;
+        await dbContext.SaveChangesAsync(cancellationToken);
+        return ToResponse(user);
+    }
+
     private async Task<UserResponse> CreateUserAsync(
         string firstName,
         string lastName,

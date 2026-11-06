@@ -11,7 +11,9 @@ namespace RaceDay.Api.Controllers;
 [Produces("application/json")]
 [Route("api/users")]
 [Authorize]
-public sealed class UsersController(IAuthenticationService authenticationService) : ControllerBase
+public sealed class UsersController(
+    IAuthenticationService authenticationService,
+    IImageStorage imageStorage) : ControllerBase
 {
     [SwaggerOperation(Summary = "View my profile", Description = "Any logged in user. Returns the profile of the user in the current session.")]
     [HttpGet("me")]
@@ -39,6 +41,39 @@ public sealed class UsersController(IAuthenticationService authenticationService
         var response = await authenticationService.UpdateProfileAsync(
             userId,
             request,
+            cancellationToken);
+        return response is null ? Unauthorized() : Ok(response);
+    }
+
+    [SwaggerOperation(Summary = "Upload my profile picture", Description = "Any logged in user. Send a multipart file named file (JPG, PNG, WEBP, or GIF, up to 5 MB). The image is stored and the URL is saved on the profile.")]
+    [Consumes("multipart/form-data")]
+    [HttpPost("me/picture")]
+    [RequestSizeLimit(6 * 1024 * 1024)]
+    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<UserResponse>> UploadProfilePicture(
+        IFormFile? file,
+        CancellationToken cancellationToken)
+    {
+        var validationError = ImageUploadRules.Validate(file);
+        if (validationError is not null || file is null)
+        {
+            return BadRequest(new ProblemDetails { Title = validationError ?? "Choose an image to upload." });
+        }
+
+        await using var stream = file.OpenReadStream();
+        var fileName = ImageUploadRules.CreateFileName(file.ContentType);
+        var imageUrl = await imageStorage.UploadAsync(
+            "profiles",
+            fileName,
+            stream,
+            file.ContentType,
+            cancellationToken);
+
+        var response = await authenticationService.SetProfileImageAsync(
+            GetAuthenticatedUserId(),
+            imageUrl,
             cancellationToken);
         return response is null ? Unauthorized() : Ok(response);
     }

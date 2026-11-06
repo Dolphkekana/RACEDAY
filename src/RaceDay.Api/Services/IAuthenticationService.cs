@@ -18,4 +18,9 @@ public interface IAuthenticationService
         int userId,
         UpdateProfileRequest request,
         CancellationToken cancellationToken);
+
+    Task<UserResponse?> SetProfileImageAsync(
+        int userId,
+        string imageUrl,
+        CancellationToken cancellationToken);
 }

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Contracts;
 using RaceDay.Api.Data;
 using RaceDay.Api.Models;
+using RaceDay.Api.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace RaceDay.Api.Controllers;
@@ -12,7 +13,9 @@ namespace RaceDay.Api.Controllers;
 [ApiController]
 [Produces("application/json")]
 [Route("api/events")]
-public sealed class EventsController(RaceDayDbContext dbContext) : ControllerBase
+public sealed class EventsController(
+    RaceDayDbContext dbContext,
+    IImageStorage imageStorage) : ControllerBase
 {
     [SwaggerOperation(Summary = "List events", Description = "Public. Lists all events. Optional filters: eventTypeId, location, eventDate, minDistance and maxDistance.")]
     [HttpGet]
@@ -257,6 +260,53 @@ public sealed class EventsController(RaceDayDbContext dbContext) : ControllerBas
         dbContext.Events.Remove(raceEvent);
         await dbContext.SaveChangesAsync(cancellationToken);
         return NoContent();
+    }
+
+    [SwaggerOperation(Summary = "Upload an event banner", Description = "Organiser only, for an event they own. Send a multipart file named file (JPG, PNG, WEBP, or GIF, up to 5 MB). The image is stored and the URL is saved on the event.")]
+    [Consumes("multipart/form-data")]
+    [HttpPost("{eventId:int}/banner")]
+    [Authorize(Roles = "Organiser")]
+    [RequestSizeLimit(6 * 1024 * 1024)]
+    [ProducesResponseType(typeof(EventResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<EventResponse>> UploadBanner(
+        int eventId,
+        IFormFile? file,
+        CancellationToken cancellationToken)
+    {
+        var raceEvent = await dbContext.Events
+            .SingleOrDefaultAsync(candidate => candidate.EventId == eventId, cancellationToken);
+        if (raceEvent is null)
+        {
+            return NotFound(new ProblemDetails { Title = "Event not found." });
+        }
+
+        if (raceEvent.OrganiserId != GetUserId())
+        {
+            return Forbid();
+        }
+
+        var validationError = ImageUploadRules.Validate(file);
+        if (validationError is not null || file is null)
+        {
+            return BadRequest(new ProblemDetails { Title = validationError ?? "Choose an image to upload." });
+        }
+
+        await using var stream = file.OpenReadStream();
+        var fileName = ImageUploadRules.CreateFileName(file.ContentType);
+        raceEvent.BannerImageUrl = await imageStorage.UploadAsync(
+            "banners",
+            fileName,
+            stream,
+            file.ContentType,
+            cancellationToken);
+        raceEvent.UpdatedAt = DateTime.UtcNow;
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return Ok(await GetResponseAsync(eventId, cancellationToken));
     }
 
     private int GetUserId() =>
