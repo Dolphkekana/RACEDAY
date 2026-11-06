@@ -3,7 +3,7 @@
     ViewData["Title"] = "My results";
 }
 
-<section class="hero">
+<section class="page-head">
     <p class="eyebrow">Participant</p>
     <h1>My results</h1>
     <p class="lead">Finish times and positions recorded by the organiser after each event.</p>
@@ -11,7 +11,8 @@
 
 @if (Model.Count == 0)
 {
-    <section class="panel">
+    <section class="panel empty-state">
+        <i class="bi bi-trophy" aria-hidden="true"></i>
         <h2>No results have been published for you yet.</h2>
         <p class="meta">Results appear here once the organiser captures them.</p>
     </section>
@@ -19,28 +20,30 @@
 else
 {
     <section class="panel">
-        <table class="table align-middle">
-            <thead>
-                <tr>
-                    <th>Event</th>
-                    <th>Date</th>
-                    <th>Category</th>
-                    <th>Finish time</th>
-                    <th>Position</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var result in Model)
-                {
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
                     <tr>
-                        <td>@result.EventName</td>
-                        <td>@result.EventDate.ToString("d MMMM yyyy")</td>
-                        <td>@result.CategoryName</td>
-                        <td>@RaceDayFormat.FinishTime(result.FinishTime)</td>
-                        <td>@RaceDayFormat.Placement(result.FinishingPosition, result.FinisherCount)</td>
+                        <th>Event</th>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Finish time</th>
+                        <th>Position</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var result in Model)
+                    {
+                        <tr>
+                            <td>@result.EventName</td>
+                            <td>@result.EventDate.ToString("d MMMM yyyy")</td>
+                            <td>@result.CategoryName</td>
+                            <td>@RaceDayFormat.FinishTime(result.FinishTime)</td>
+                            <td>@RaceDayFormat.Placement(result.FinishingPosition, result.FinisherCount)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </section>
 }

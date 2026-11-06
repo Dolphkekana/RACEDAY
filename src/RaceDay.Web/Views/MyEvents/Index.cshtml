@@ -3,7 +3,7 @@
     ViewData["Title"] = "My events";
 }
 
-<section class="hero">
+<section class="page-head">
     <p class="eyebrow">Participant</p>
     <h1>My events</h1>
     <p class="lead">Every event you have entered, with the category you chose and the current status.</p>
@@ -11,7 +11,8 @@
 
 @if (Model.Count == 0)
 {
-    <section class="panel">
+    <section class="panel empty-state">
+        <i class="bi bi-calendar-plus" aria-hidden="true"></i>
         <h2>You have not entered an event yet.</h2>
         <a class="btn btn-primary" asp-controller="Home" asp-action="Index">Browse events</a>
     </section>
@@ -19,26 +20,28 @@
 else
 {
     <section class="panel">
-        <table class="table align-middle">
-            <thead>
-                <tr>
-                    <th>Event</th>
-                    <th>Category</th>
-                    <th>Entered</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var enrolment in Model)
-                {
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
                     <tr>
-                        <td><a asp-controller="Events" asp-action="Details" asp-route-id="@enrolment.EventId">@enrolment.EventName</a></td>
-                        <td>@enrolment.CategoryName</td>
-                        <td>@enrolment.EnrolmentDate.ToLocalTime().ToString("d MMM yyyy")</td>
-                        <td><partial name="_StatusBadge" model="enrolment.Status" /></td>
+                        <th>Event</th>
+                        <th>Category</th>
+                        <th>Entered</th>
+                        <th>Status</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var enrolment in Model)
+                    {
+                        <tr>
+                            <td><a asp-controller="Events" asp-action="Details" asp-route-id="@enrolment.EventId">@enrolment.EventName</a></td>
+                            <td>@enrolment.CategoryName</td>
+                            <td>@enrolment.EnrolmentDate.ToLocalTime().ToString("d MMM yyyy")</td>
+                            <td><partial name="_StatusBadge" model="enrolment.Status" /></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </section>
 }
