@@ -19,7 +19,13 @@ builder.Services.AddHttpClient<RaceDay.Web.Api.RaceDayApiClient>(client =>
 {
     var baseUrl = builder.Configuration["Api:BaseUrl"] ?? "http://localhost:5258";
     client.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
-}).AddHttpMessageHandler<RaceDay.Web.Api.ApiSessionHandler>();
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    // The MVC session stores each user's API cookie. A shared cookie jar would mix those users.
+    UseCookies = false
+})
+.AddHttpMessageHandler<RaceDay.Web.Api.ApiSessionHandler>();
 
 var app = builder.Build();
 
