@@ -60,31 +60,18 @@
     @if (isOrganiser)
     {
         <div class="app-shell">
-            <aside class="offcanvas-lg offcanvas-start side-nav" tabindex="-1" id="organiserNav" aria-label="Organiser">
+            <aside class="side-nav d-none d-lg-flex" aria-label="Organiser">
+                <partial name="_OrganiserNav" />
+            </aside>
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="organiserNav" aria-label="Organiser menu">
                 <div class="offcanvas-header">
                     <h2 class="offcanvas-title">Organiser</h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#organiserNav" aria-label="Close menu"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close menu"></button>
                 </div>
-                <div class="offcanvas-body">
-                    <p class="side-label">Manage</p>
-                    <a class="side-link @(current == "Dashboard" ? "is-active" : null)" asp-controller="Dashboard" asp-action="Index">
-                        <i class="bi bi-speedometer2" aria-hidden="true"></i> Dashboard
-                    </a>
-                    <a class="side-link @(current == "ManageEvents" || current == "Categories" ? "is-active" : null)" asp-controller="ManageEvents" asp-action="Index">
-                        <i class="bi bi-flag" aria-hidden="true"></i> Events
-                    </a>
-                    <a class="side-link @(current == "Enrolments" ? "is-active" : null)" asp-controller="ManageEvents" asp-action="Index">
-                        <i class="bi bi-people" aria-hidden="true"></i> Entries
-                    </a>
-                    <a class="side-link @(current == "RaceResults" ? "is-active" : null)" asp-controller="ManageEvents" asp-action="Index">
-                        <i class="bi bi-trophy" aria-hidden="true"></i> Results
-                    </a>
-                    <p class="side-label">Site</p>
-                    <a class="side-link @(current == "Home" || current == "Events" ? "is-active" : null)" asp-controller="Home" asp-action="Index">
-                        <i class="bi bi-calendar-event" aria-hidden="true"></i> Public events
-                    </a>
+                <div class="offcanvas-body side-nav">
+                    <partial name="_OrganiserNav" />
                 </div>
-            </aside>
+            </div>
             <div class="app-main">
                 <main class="container page-content">
                     <partial name="_Alerts" />

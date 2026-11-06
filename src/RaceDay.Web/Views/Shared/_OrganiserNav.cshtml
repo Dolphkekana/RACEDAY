@@ -1,0 +1,20 @@
+@{
+    var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+}
+<p class="side-label">Manage</p>
+<a class="side-link @(current == "Dashboard" ? "is-active" : null)" asp-controller="Dashboard" asp-action="Index">
+    <i class="bi bi-speedometer2" aria-hidden="true"></i> Dashboard
+</a>
+<a class="side-link @(current == "ManageEvents" || current == "Categories" ? "is-active" : null)" asp-controller="ManageEvents" asp-action="Index">
+    <i class="bi bi-flag" aria-hidden="true"></i> Events
+</a>
+<a class="side-link @(current == "Enrolments" ? "is-active" : null)" asp-controller="ManageEvents" asp-action="Index">
+    <i class="bi bi-people" aria-hidden="true"></i> Entries
+</a>
+<a class="side-link @(current == "RaceResults" ? "is-active" : null)" asp-controller="ManageEvents" asp-action="Index">
+    <i class="bi bi-trophy" aria-hidden="true"></i> Results
+</a>
+<p class="side-label">Site</p>
+<a class="side-link @(current == "Home" || current == "Events" ? "is-active" : null)" asp-controller="Home" asp-action="Index">
+    <i class="bi bi-calendar-event" aria-hidden="true"></i> Public events
+</a>
