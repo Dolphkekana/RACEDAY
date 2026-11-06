@@ -203,6 +203,19 @@ h1, h2, h3 {
     border-radius: 8px;
 }
 
+.nav-user {
+    color: #d7efe6;
+    font-weight: 600;
+}
+
+.nav-logout {
+    margin: 0;
+}
+
+.form-panel {
+    max-width: 720px;
+}
+
 @media (max-width: 720px) {
     .header-row {
         align-items: flex-start;

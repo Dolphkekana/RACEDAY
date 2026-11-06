@@ -13,6 +13,18 @@
             <a class="brand" asp-controller="Home" asp-action="Index">RaceDay</a>
             <nav class="main-nav" aria-label="Primary">
                 <a asp-controller="Home" asp-action="Index">Events</a>
+                @if (Context.Session.GetInt32(AppSession.UserId) is null)
+                {
+                    <a asp-controller="Account" asp-action="Login">Sign in</a>
+                    <a asp-controller="Account" asp-action="Register">Register</a>
+                }
+                else
+                {
+                    <span class="nav-user">@Context.Session.GetString(AppSession.DisplayName)</span>
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="nav-logout">
+                        <button class="linkish" type="submit">Sign out</button>
+                    </form>
+                }
             </nav>
         </div>
     </header>
