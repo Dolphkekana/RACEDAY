@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - RaceDay</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-row">
+            <a class="brand" asp-controller="Home" asp-action="Index">RaceDay</a>
+            <nav class="main-nav" aria-label="Primary">
+                <a asp-controller="Home" asp-action="Index">Events</a>
+            </nav>
+        </div>
+    </header>
+    <main class="container page-content">
+        @if (TempData["Error"] is string errorMessage)
+        {
+            <div class="alert alert-danger" role="alert">@errorMessage</div>
+        }
+        @if (TempData["Success"] is string successMessage)
+        {
+            <div class="alert alert-success" role="alert">@successMessage</div>
+        }
+        @RenderBody()
+    </main>
+    <footer class="site-footer">
+        <div class="container">RaceDay community road events</div>
+    </footer>
+    <script src="~/lib/bootstrap/bootstrap.bundle.min.js"></script>
+</body>
+</html>

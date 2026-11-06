@@ -1,0 +1,213 @@
+:root {
+    --ink: #14241c;
+    --pine: #0f6e56;
+    --pine-dark: #0b3b30;
+    --amber: #e6a317;
+    --clay: #c4492a;
+    --paper: #f4f7f5;
+    --card: #ffffff;
+    --line: #d5e2db;
+    --muted: #5d6f66;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--ink);
+    background:
+        linear-gradient(180deg, rgba(15, 110, 86, 0.08), transparent 220px),
+        var(--paper);
+    font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+}
+
+a {
+    color: var(--pine-dark);
+}
+
+.site-header {
+    background: var(--pine-dark);
+    color: #fff;
+    border-bottom: 4px solid var(--amber);
+}
+
+.header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 72px;
+}
+
+.brand {
+    color: #fff;
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.main-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    align-items: center;
+}
+
+.main-nav a,
+.main-nav button.linkish {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    background: transparent;
+    border: 0;
+    padding: 0;
+}
+
+.main-nav a:hover,
+.main-nav button.linkish:hover {
+    color: var(--amber);
+}
+
+.page-content {
+    padding-top: 1.75rem;
+    padding-bottom: 3rem;
+}
+
+.site-footer {
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    padding: 1rem 0 1.5rem;
+}
+
+.hero {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 8px solid var(--pine);
+    padding: 1.5rem 1.6rem;
+    margin-bottom: 1.25rem;
+}
+
+.eyebrow {
+    margin: 0 0 0.35rem;
+    color: var(--clay);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+h1, h2, h3 {
+    letter-spacing: -0.02em;
+}
+
+.lead {
+    color: var(--muted);
+    max-width: 42rem;
+}
+
+.panel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.event-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.event-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.event-card img,
+.banner-frame img,
+.profile-frame img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    background: #d9e7e1;
+}
+
+.event-card .card-body,
+.pad {
+    padding: 1rem;
+}
+
+.meta {
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.status-confirmed {
+    background: #1f7a4d;
+    color: #fff;
+}
+
+.status-pending {
+    background: #e6a317;
+    color: #1d1a12;
+}
+
+.status-cancelled {
+    background: #8d3b3b;
+    color: #fff;
+}
+
+.btn-primary {
+    background: var(--pine);
+    border-color: var(--pine);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background: var(--pine-dark);
+    border-color: var(--pine-dark);
+}
+
+.btn-amber {
+    background: var(--amber);
+    border: 1px solid #c48a10;
+    color: #1d1a12;
+    font-weight: 700;
+}
+
+.table > :not(caption) > * > * {
+    background: transparent;
+}
+
+.profile-frame img {
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+}
+
+@media (max-width: 720px) {
+    .header-row {
+        align-items: flex-start;
+        flex-direction: column;
+        padding-top: 0.8rem;
+        padding-bottom: 0.8rem;
+    }
+}
