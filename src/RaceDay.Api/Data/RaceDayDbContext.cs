@@ -33,6 +33,7 @@ public sealed class RaceDayDbContext : DbContext
             entity.Property(u => u.PasswordHash).HasMaxLength(255).IsRequired();
             entity.Property(u => u.PhoneNumber).HasMaxLength(20).IsRequired();
             entity.Property(u => u.Role).HasMaxLength(20).IsRequired();
+            entity.Property(u => u.ProfileImageUrl).HasMaxLength(500);
             entity.Property(u => u.DateOfBirth).HasColumnType("date");
             entity.Property(u => u.CreatedAt)
                 .HasColumnType("datetime2(0)")

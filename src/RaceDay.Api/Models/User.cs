@@ -22,6 +22,8 @@ public class User
 
     public string Role { get; set; } = string.Empty;
 
+    public string? ProfileImageUrl { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation properties for EF Core relationships 

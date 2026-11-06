@@ -70,7 +70,8 @@ public sealed record UserResponse(
     string Email,
     string PhoneNumber,
     DateTime DateOfBirth,
-    string Role);
+    string Role,
+    string? ProfileImageUrl = null);
 
 // Payload for updating the authenticated user's editable profile details.
 public sealed record UpdateProfileRequest

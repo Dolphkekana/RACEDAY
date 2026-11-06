@@ -133,5 +133,6 @@ public sealed class AuthenticationService(
             user.Email,
             user.PhoneNumber,
             user.DateOfBirth,
-            user.Role);
+            user.Role,
+            user.ProfileImageUrl);
 }
