@@ -47,9 +47,16 @@ else
     builder.Services.AddSingleton<IImageStorage, AzureBlobImageStorage>();
 }
 
-//Register EF Core DbContext with SQL Server 
+// SQL Server is the normal database. InMemory is only for a machine that cannot run LocalDB.
 builder.Services.AddDbContext<RaceDayDbContext>(options =>
 {
+    var provider = builder.Configuration["Database:Provider"];
+    if (string.Equals(provider, "InMemory", StringComparison.OrdinalIgnoreCase))
+    {
+        options.UseInMemoryDatabase(builder.Configuration["Database:Name"] ?? "RaceDayDev");
+        return;
+    }
+
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     options.UseSqlServer(connectionString);
 });
@@ -78,16 +85,34 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// Apply any pending migrations in Development so the LocalDB database is created automatically
-if (app.Environment.IsDevelopment())
+// Apply any pending migrations in Development so the LocalDB database is created automatically.
+// Containers set Database:ApplyMigrations and retry while SQL Server is still starting.
+var applyMigrations = app.Environment.IsDevelopment()
+    || app.Configuration.GetValue<bool>("Database:ApplyMigrations");
+if (applyMigrations)
 {
     using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<RaceDayDbContext>();
 
-    // The test projects use the in-memory provider, which does not support migrations
     if (dbContext.Database.IsRelational())
     {
-        dbContext.Database.Migrate();
+        var retries = app.Configuration.GetValue<bool>("Database:ApplyMigrations") ? 12 : 1;
+        for (var attempt = 1; attempt <= retries; attempt++)
+        {
+            try
+            {
+                dbContext.Database.Migrate();
+                break;
+            }
+            catch (Exception) when (attempt < retries)
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(5));
+            }
+        }
+    }
+    else
+    {
+        dbContext.Database.EnsureCreated();
     }
 }
 

@@ -1,0 +1,60 @@
+services:
+  sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "RaceDay@2026!"
+    ports:
+      - "1433:1433"
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/1433'"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 20s
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    command: azurite-blob --blobHost 0.0.0.0 --blobPort 10000
+    ports:
+      - "10000:10000"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PROJECT: src/RaceDay.Api/RaceDay.Api.csproj
+        ASSEMBLY_NAME: RaceDay.Api.dll
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://0.0.0.0:8080
+      ConnectionStrings__DefaultConnection: Server=sql,1433;Database=RaceDayApiDB;User Id=sa;Password=RaceDay@2026!;TrustServerCertificate=True;MultipleActiveResultSets=true
+      Database__ApplyMigrations: "true"
+      AzureStorage__ConnectionString: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;
+      AzureStorage__ContainerName: raceday-images
+      AzureStorage__PublicBlobBaseUrl: http://localhost:10000/devstoreaccount1
+    ports:
+      - "5258:8080"
+    depends_on:
+      sql:
+        condition: service_healthy
+      azurite:
+        condition: service_started
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PROJECT: src/RaceDay.Web/RaceDay.Web.csproj
+        ASSEMBLY_NAME: RaceDay.Web.dll
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://0.0.0.0:8080
+      Api__BaseUrl: http://api:8080
+      Api__PublicBaseUrl: http://localhost:5258
+    ports:
+      - "5080:8080"
+    depends_on:
+      - api

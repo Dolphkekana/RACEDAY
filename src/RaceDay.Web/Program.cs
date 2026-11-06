@@ -23,10 +23,7 @@ builder.Services.AddHttpClient<RaceDay.Web.Api.RaceDayApiClient>(client =>
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-}
+app.UseExceptionHandler("/Home/Error");
 
 app.UseStaticFiles();
 app.UseRouting();
