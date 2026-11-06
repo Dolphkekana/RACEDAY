@@ -19,6 +19,9 @@
 # Mono auto generated files
 mono_crash.*
 
+# Local image uploads used when Azure Storage is not configured
+App_Data/
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

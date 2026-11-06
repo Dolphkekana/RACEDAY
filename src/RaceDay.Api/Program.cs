@@ -36,6 +36,16 @@ builder.Services
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<AppAuthenticationServiceContract, AppAuthenticationService>();
+builder.Services.Configure<ImageStorageOptions>(
+    builder.Configuration.GetSection(ImageStorageOptions.SectionName));
+if (string.IsNullOrWhiteSpace(builder.Configuration["AzureStorage:ConnectionString"]))
+{
+    builder.Services.AddSingleton<IImageStorage, LocalFileImageStorage>();
+}
+else
+{
+    builder.Services.AddSingleton<IImageStorage, AzureBlobImageStorage>();
+}
 
 //Register EF Core DbContext with SQL Server 
 builder.Services.AddDbContext<RaceDayDbContext>(options =>
