@@ -14,6 +14,12 @@ builder.Services.AddSession(options =>
         : CookieSecurePolicy.Always;
     options.IdleTimeout = TimeSpan.FromMinutes(30);
 });
+builder.Services.AddTransient<RaceDay.Web.Api.ApiSessionHandler>();
+builder.Services.AddHttpClient<RaceDay.Web.Api.RaceDayApiClient>(client =>
+{
+    var baseUrl = builder.Configuration["Api:BaseUrl"] ?? "http://localhost:5258";
+    client.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
+}).AddHttpMessageHandler<RaceDay.Web.Api.ApiSessionHandler>();
 
 var app = builder.Build();
 
