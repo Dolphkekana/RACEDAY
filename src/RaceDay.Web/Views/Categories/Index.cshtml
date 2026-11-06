@@ -1,0 +1,57 @@
+@model CategoryFormViewModel
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<section class="hero">
+    <p class="eyebrow">Organiser</p>
+    <h1>Categories for @Model.EventName</h1>
+    <p class="lead">Add age or distance categories. Participants choose one of these when they enter.</p>
+    <a asp-controller="ManageEvents" asp-action="Edit" asp-route-id="@Model.EventId">Back to event</a>
+</section>
+
+<section class="panel form-panel">
+    <h2>Add a category</h2>
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <input type="hidden" asp-for="EventId" />
+        <partial name="_CategoryFields" model="Model" />
+        <button class="btn btn-primary" type="submit">Add category</button>
+    </form>
+</section>
+
+@if (Model.Categories.Count == 0)
+{
+    <section class="panel">
+        <p>No categories yet.</p>
+    </section>
+}
+else
+{
+    @foreach (var category in Model.Categories)
+    {
+        var edit = new CategoryFormViewModel
+        {
+            EventId = Model.EventId,
+            CategoryId = category.CategoryId,
+            Name = category.Name,
+            MinimumAge = category.MinimumAge,
+            MaximumAge = category.MaximumAge,
+            DistanceKm = category.DistanceKm
+        };
+        <section class="panel">
+            <h2>@category.Name</h2>
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="EventId" />
+                <input type="hidden" name="CategoryId" value="@category.CategoryId" />
+                <partial name="_CategoryFields" model="edit" />
+                <button class="btn btn-primary" type="submit">Save category</button>
+            </form>
+            <form asp-action="Delete" method="post" class="mt-2" onsubmit="return confirm('Delete this category?');">
+                <input type="hidden" name="eventId" value="@Model.EventId" />
+                <input type="hidden" name="categoryId" value="@category.CategoryId" />
+                <button class="btn btn-link link-danger" type="submit">Delete category</button>
+            </form>
+        </section>
+    }
+}

@@ -1,0 +1,19 @@
+@model CategoryFormViewModel
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label class="form-label" for="Name-@Model.CategoryId">Name</label>
+        <input class="form-control" id="Name-@Model.CategoryId" name="Name" value="@Model.Name" />
+    </div>
+    <div class="col-md-2 mb-3">
+        <label class="form-label" for="MinimumAge-@Model.CategoryId">Minimum age</label>
+        <input class="form-control" id="MinimumAge-@Model.CategoryId" name="MinimumAge" value="@Model.MinimumAge" />
+    </div>
+    <div class="col-md-2 mb-3">
+        <label class="form-label" for="MaximumAge-@Model.CategoryId">Maximum age</label>
+        <input class="form-control" id="MaximumAge-@Model.CategoryId" name="MaximumAge" value="@Model.MaximumAge" />
+    </div>
+    <div class="col-md-2 mb-3">
+        <label class="form-label" for="DistanceKm-@Model.CategoryId">Distance km</label>
+        <input class="form-control" id="DistanceKm-@Model.CategoryId" name="DistanceKm" value="@Model.DistanceKm" />
+    </div>
+</div>
