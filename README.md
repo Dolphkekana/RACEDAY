@@ -730,13 +730,6 @@ The compose file uses the public Azurite development storage account so banners 
 
 After the workflow is green, add a screenshot of that run beside the Part 1 screenshot already in this file.
 
-### Part 3 video
-
-Record an unlisted YouTube video in your own voice. Show the running site, the MVC structure, a banner or profile upload, and the Docker setup. Paste the link here before you submit:
-
-```
-PASTE_YOUR_YOUTUBE_LINK_HERE
-```
 
 ### Part 3 status
 
