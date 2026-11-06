@@ -282,6 +282,13 @@ h1, h2, h3 {
     padding: 0;
 }
 
+.status-form {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.45rem;
+    max-width: 220px;
+}
+
 @media (max-width: 720px) {
     .header-row {
         align-items: flex-start;

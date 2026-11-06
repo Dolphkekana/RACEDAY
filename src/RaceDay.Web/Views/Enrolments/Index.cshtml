@@ -1,0 +1,65 @@
+@model EnrolmentListViewModel
+@{
+    ViewData["Title"] = "Entries";
+    var statuses = new[] { "Pending", "Confirmed", "Cancelled" };
+}
+
+<section class="hero">
+    <p class="eyebrow">Organiser</p>
+    <h1>Entries for @Model.EventName</h1>
+    <p class="lead">Participants who have entered, the category they chose, and their enrolment status.</p>
+    <a asp-controller="ManageEvents" asp-action="Edit" asp-route-id="@Model.EventId">Back to event</a>
+</section>
+
+@if (Model.Enrolments.Count == 0)
+{
+    <section class="panel">
+        <p>Nobody has entered this event yet.</p>
+    </section>
+}
+else
+{
+    <section class="panel">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Participant</th>
+                    <th>Category</th>
+                    <th>Entered</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var enrolment in Model.Enrolments)
+                {
+                    <tr>
+                        <td>@enrolment.ParticipantName</td>
+                        <td>@enrolment.CategoryName</td>
+                        <td>@enrolment.EnrolmentDate.ToLocalTime().ToString("d MMM yyyy")</td>
+                        <td>
+                            <partial name="_StatusBadge" model="enrolment.Status" />
+                            <form asp-action="Status" method="post" class="status-form">
+                                <input type="hidden" name="eventId" value="@Model.EventId" />
+                                <input type="hidden" name="enrolmentId" value="@enrolment.EnrolmentId" />
+                                <select class="form-select form-select-sm" name="status" aria-label="Status for @enrolment.ParticipantName">
+                                    @foreach (var status in statuses)
+                                    {
+                                        if (status == enrolment.Status)
+                                        {
+                                            <option value="@status" selected>@status</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@status">@status</option>
+                                        }
+                                    }
+                                </select>
+                                <button class="btn btn-sm btn-primary" type="submit">Update</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+}
