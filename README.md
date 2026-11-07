@@ -736,5 +736,4 @@ The compose file uses the public Azurite development storage account so banners 
 - [x] Participant home, event entry, My Events, My Results, and profile.
 - [x] Banner and profile uploads through the API, with Azure Blob Storage when configured.
 - [x] Dockerfile and Docker Compose run command.
-- [ ] YouTube link. Replace `PASTE_YOUR_YOUTUBE_LINK_HERE` with your unlisted video.
 - [x] Screenshot of the green Part 3 GitHub Actions run.
